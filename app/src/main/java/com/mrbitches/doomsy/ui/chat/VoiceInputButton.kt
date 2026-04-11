@@ -9,6 +9,7 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.mrbitches.doomsy.ui.theme.DeepBlack
+import com.mrbitches.doomsy.ui.theme.GlassWhiteBorder
 import com.mrbitches.doomsy.ui.theme.Gold
 import com.mrbitches.doomsy.ui.theme.GunmetalLight
 import com.mrbitches.doomsy.ui.theme.OffWhite
@@ -85,9 +88,10 @@ fun VoiceInputButton(
 
     Box(
         modifier = modifier
-            .size(44.dp)
+            .size(42.dp)
             .clip(CircleShape)
             .background(bgColor)
+            .border(0.5.dp, GlassWhiteBorder, CircleShape)
             .clickable {
                 if (isListening) {
                     speechRecognizer.stopListening()
@@ -99,9 +103,9 @@ fun VoiceInputButton(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = if (isListening) "..." else "mic",
+            text = if (isListening) "\u2026" else "mic",
             style = MaterialTheme.typography.labelSmall.copy(
-                color = if (isListening) OffWhite else Gold,
+                color = if (isListening) DeepBlack else Gold,
             ),
         )
     }

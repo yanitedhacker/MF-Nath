@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mrbitches.doomsy.ui.theme.GlassWhite
+import com.mrbitches.doomsy.ui.theme.GlassBlack
+import com.mrbitches.doomsy.ui.theme.GoldSubtle
 import com.mrbitches.doomsy.ui.theme.OffWhite
 import com.mrbitches.doomsy.util.Anim
 import kotlinx.coroutines.delay
@@ -53,18 +55,20 @@ fun QuipOverlay(
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(spring()) + scaleIn(
-                initialScale = 0.8f,
+                initialScale = 0.85f,
                 animationSpec = spring(
-                    dampingRatio = 0.6f,
+                    dampingRatio = 0.65f,
                     stiffness = 300f,
                 ),
             ),
             exit = fadeOut() + scaleOut(targetScale = 0.9f),
         ) {
+            val shape = RoundedCornerShape(16.dp)
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(GlassWhite)
+                    .clip(shape)
+                    .background(GlassBlack)
+                    .border(0.5.dp, GoldSubtle, shape)
                     .padding(horizontal = 24.dp, vertical = 16.dp),
             ) {
                 Text(

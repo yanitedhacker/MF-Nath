@@ -9,10 +9,35 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# Binaries & archives
 *.apk
 *.ap_
 *.dex
 *.class
 *.aar
-# Large model files - track separately
-app/src/main/assets/gemma-4-e2b-q4_k_m.gguf
+*.jar
+*.so
+*.o
+*.a
+
+# Large model / asset files
+*.gguf
+*.gguf.part_*
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.tflite
+
+# Large media (keep glb tracked since it's the 3D model)
+*.mp4
+*.mov
+*.avi
+*.wav
+*.mp3
+
+# IDE / OS
+*.hprof
+*.log

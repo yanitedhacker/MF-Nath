@@ -21,6 +21,7 @@ val DoomsyTypography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 34.sp,
+        letterSpacing = (-0.5).sp,
         color = OffWhite,
     ),
     headlineMedium = TextStyle(
@@ -28,7 +29,16 @@ val DoomsyTypography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
+        letterSpacing = (-0.3).sp,
         color = OffWhite,
+    ),
+    titleLarge = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp,
+        color = Gold,
     ),
     titleMedium = TextStyle(
         fontFamily = InterFontFamily,
@@ -40,16 +50,23 @@ val DoomsyTypography = Typography(
     bodyLarge = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
+        fontSize = 15.sp,
+        lineHeight = 22.sp,
         color = OffWhite,
     ),
     bodyMedium = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Light,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
+        fontSize = 13.sp,
+        lineHeight = 18.sp,
         color = MutedGrey,
+    ),
+    bodySmall = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        color = DimGrey,
     ),
     labelLarge = TextStyle(
         fontFamily = InterFontFamily,
@@ -58,11 +75,19 @@ val DoomsyTypography = Typography(
         lineHeight = 20.sp,
         color = Gold,
     ),
+    labelMedium = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 1.sp,
+        color = GoldDim,
+    ),
     labelSmall = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 11.sp,
-        lineHeight = 16.sp,
+        lineHeight = 14.sp,
         color = MutedGrey,
     ),
 )

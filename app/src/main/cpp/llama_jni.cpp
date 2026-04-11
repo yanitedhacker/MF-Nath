@@ -66,20 +66,29 @@ Java_com_mrbitches_doomsy_llm_LlamaBridge_generate(
     std::string prompt_str(prompt_cstr);
     env->ReleaseStringUTFChars(prompt, prompt_cstr);
 
+    llama_kv_cache_clear(ctx);
+
     const llama_vocab * vocab = llama_model_get_vocab(model);
     const int n_prompt_max = prompt_str.size() * 2 + 32;
     std::vector<llama_token> tokens(n_prompt_max);
     const int n_tokens = llama_tokenize(vocab, prompt_str.c_str(), prompt_str.size(),
                                          tokens.data(), n_prompt_max, true, true);
     if (n_tokens < 0) {
-        LOGE("Tokenization failed");
+        LOGE("Tokenization failed: n_tokens=%d", n_tokens);
         return env->NewStringUTF("[Error: tokenization failed]");
     }
     tokens.resize(n_tokens);
 
+    LOGI("Prompt tokens: %d, context size: %d", n_tokens, (int)llama_n_ctx(ctx));
+
+    if (n_tokens >= (int)llama_n_ctx(ctx)) {
+        LOGE("Prompt too long for context: %d >= %d", n_tokens, (int)llama_n_ctx(ctx));
+        return env->NewStringUTF("[Error: prompt too long]");
+    }
+
     llama_batch batch = llama_batch_get_one(tokens.data(), n_tokens);
     if (llama_decode(ctx, batch) != 0) {
-        LOGE("Decode failed");
+        LOGE("Initial decode failed for %d tokens", n_tokens);
         return env->NewStringUTF("[Error: decode failed]");
     }
 

@@ -20,14 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.Gold
 import com.mrbitches.doomsy.ui.theme.GoldDim
 import com.mrbitches.doomsy.ui.theme.OffWhite
+import com.mrbitches.doomsy.ui.theme.Void
 import com.mrbitches.doomsy.util.Anim
 import com.mrbitches.doomsy.util.Haptic
 import kotlinx.coroutines.delay
@@ -61,7 +62,7 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DeepBlack)
+            .background(Void)
             .alpha(screenAlpha.value),
         contentAlignment = Alignment.Center,
     ) {
@@ -98,7 +99,7 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
 
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawMaskSilhouette(alpha: Float) {
     val maskColor = Gold.copy(alpha = alpha)
-    val darkColor = DeepBlack.copy(alpha = alpha)
+    val darkColor = Void.copy(alpha = alpha)
 
     drawOval(
         brush = Brush.verticalGradient(
@@ -114,11 +115,11 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawMaskSilhouette(
     drawRect(
         color = darkColor,
         topLeft = Offset(size.width * 0.22f, slitY),
-        size = androidx.compose.ui.geometry.Size(slitWidth, slitHeight),
+        size = Size(slitWidth, slitHeight),
     )
     drawRect(
         color = darkColor,
         topLeft = Offset(size.width * 0.63f, slitY),
-        size = androidx.compose.ui.geometry.Size(slitWidth, slitHeight),
+        size = Size(slitWidth, slitHeight),
     )
 }

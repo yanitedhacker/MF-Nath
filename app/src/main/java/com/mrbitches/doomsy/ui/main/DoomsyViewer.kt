@@ -1,9 +1,12 @@
 package com.mrbitches.doomsy.ui.main
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -33,28 +36,43 @@ fun DoomsyViewer(
     val modelLoader = rememberModelLoader(engine)
     val environment = rememberEnvironment(engine)
 
-    val infiniteTransition = rememberInfiniteTransition(label = "breathing")
+    val infiniteTransition = rememberInfiniteTransition(label = "idle")
+
+    // Subtle breathing bob
     val breathOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 0.02f,
+        initialValue = -0.015f,
+        targetValue = 0.015f,
         animationSpec = infiniteRepeatable(
-            animation = tween(3000),
+            animation = tween(3000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "breathY",
     )
 
-    val headSway by infiniteTransition.animateFloat(
-        initialValue = -1.5f,
-        targetValue = 1.5f,
+    // Slow idle sway
+    val idleRotation by infiniteTransition.animateFloat(
+        initialValue = -6f,
+        targetValue = 6f,
         animationSpec = infiniteRepeatable(
-            animation = tween(5000),
+            animation = tween(7000),
             repeatMode = RepeatMode.Reverse,
         ),
-        label = "headSway",
+        label = "idleRotation",
     )
 
-    val targetScale = if (scaledDown) 0.7f else 1.0f
+    // Smooth scale transition when chat opens/closes
+    val targetScale by animateFloatAsState(
+        targetValue = if (scaledDown) 0.55f else 0.85f,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 150f),
+        label = "scale",
+    )
+
+    // Model shifts up when chat opens so it's visible above the sheet
+    val yOffset by animateFloatAsState(
+        targetValue = if (scaledDown) 0.35f else -0.15f,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 150f),
+        label = "yOffset",
+    )
 
     Box(modifier = modifier) {
         Scene(
@@ -82,8 +100,8 @@ fun DoomsyViewer(
                     modelInstance = modelInstance,
                     scaleToUnits = targetScale,
                     autoAnimate = true,
-                    position = Float3(0f, breathOffset, 0f),
-                    rotation = Float3(0f, headSway, 0f),
+                    position = Float3(0f, yOffset + breathOffset, 0f),
+                    rotation = Float3(0f, idleRotation, 0f),
                 )
             }
         }

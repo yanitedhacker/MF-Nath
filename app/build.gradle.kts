@@ -56,7 +56,7 @@ android {
     }
 
     androidResources {
-        noCompress += listOf("gguf", "glb")
+        noCompress += listOf("gguf", "glb", "part_aa", "part_ab")
     }
 
     packaging {

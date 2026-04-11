@@ -7,15 +7,17 @@ import androidx.compose.runtime.Composable
 private val DoomsyColorScheme = darkColorScheme(
     primary = Gold,
     onPrimary = DeepBlack,
-    secondary = BrushedSilver,
+    primaryContainer = GoldSubtle,
+    secondary = Amber,
     onSecondary = DeepBlack,
-    background = DeepBlack,
+    background = Void,
     onBackground = OffWhite,
-    surface = GunmetalGrey,
+    surface = Obsidian,
     onSurface = OffWhite,
-    surfaceVariant = GunmetalLight,
+    surfaceVariant = GunmetalGrey,
     onSurfaceVariant = MutedGrey,
     outline = GlassWhiteBorder,
+    outlineVariant = DimGrey,
 )
 
 @Composable
