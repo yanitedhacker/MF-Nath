@@ -25,12 +25,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mrbitches.doomsy.ui.theme.DeepBlack
-import com.mrbitches.doomsy.ui.theme.FogSilver
-import com.mrbitches.doomsy.ui.theme.GoldDim
-import com.mrbitches.doomsy.ui.theme.GoldSubtle
-import com.mrbitches.doomsy.ui.theme.Ivory
-import com.mrbitches.doomsy.ui.theme.Pearl
-import com.mrbitches.doomsy.ui.theme.SilverSmoke
+import com.mrbitches.doomsy.ui.theme.AshGrey
+import com.mrbitches.doomsy.ui.theme.VillainOrangeDim
+import com.mrbitches.doomsy.ui.theme.VillainOrangeSubtle
+import com.mrbitches.doomsy.ui.theme.StarkGrey
+import com.mrbitches.doomsy.ui.theme.StarkWhite
+import com.mrbitches.doomsy.ui.theme.MadvillainSilver
 import com.mrbitches.doomsy.util.Anim
 import kotlinx.coroutines.delay
 
@@ -61,7 +61,7 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Pearl, Ivory, FogSilver),
+                    colors = listOf(StarkWhite, StarkGrey, AshGrey),
                 ),
             )
             .alpha(screenAlpha.value),
@@ -73,8 +73,8 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            Pearl.copy(alpha = 0.95f),
-                            Pearl.copy(alpha = 0f),
+                            StarkWhite.copy(alpha = 0.95f),
+                            StarkWhite.copy(alpha = 0f),
                         ),
                         radius = 900f,
                     ),
@@ -89,9 +89,9 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            GoldSubtle.copy(alpha = 0f),
-                            GoldDim.copy(alpha = 0.5f),
-                            GoldSubtle.copy(alpha = 0f),
+                            VillainOrangeSubtle.copy(alpha = 0f),
+                            VillainOrangeDim.copy(alpha = 0.5f),
+                            VillainOrangeSubtle.copy(alpha = 0f),
                         ),
                     ),
                 ),
@@ -122,7 +122,7 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
         Text(
             text = "DOOMSY",
             style = MaterialTheme.typography.labelMedium.copy(
-                color = SilverSmoke,
+                color = MadvillainSilver,
             ),
             modifier = Modifier
                 .align(Alignment.TopCenter)

@@ -25,8 +25,8 @@ import com.mrbitches.doomsy.data.DoomTrack
 import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.DimGrey
 import com.mrbitches.doomsy.ui.theme.FrostBorder
-import com.mrbitches.doomsy.ui.theme.GlassIvory
-import com.mrbitches.doomsy.ui.theme.Gold
+import com.mrbitches.doomsy.ui.theme.GlassStark
+import com.mrbitches.doomsy.ui.theme.VillainOrange
 import com.mrbitches.doomsy.ui.theme.GunmetalLight
 import com.mrbitches.doomsy.util.SpotifyIntent
 
@@ -39,7 +39,7 @@ fun TrackCard(track: DoomTrack, modifier: Modifier = Modifier) {
         modifier = modifier
             .width(212.dp)
             .clip(shape)
-            .background(GlassIvory)
+            .background(GlassStark)
             .border(1.dp, FrostBorder, shape)
             .clickable { SpotifyIntent.open(context, track.spotifyUri) }
             .padding(horizontal = 14.dp, vertical = 12.dp),
@@ -58,7 +58,7 @@ fun TrackCard(track: DoomTrack, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(6.dp)
                     .clip(CircleShape)
-                    .background(Gold.copy(alpha = 0.6f)),
+                    .background(VillainOrange.copy(alpha = 0.6f)),
             )
         }
 
@@ -72,7 +72,7 @@ fun TrackCard(track: DoomTrack, modifier: Modifier = Modifier) {
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = track.album,
+                text = "${track.artist} · ${track.album}",
                 style = MaterialTheme.typography.labelSmall.copy(color = DimGrey),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

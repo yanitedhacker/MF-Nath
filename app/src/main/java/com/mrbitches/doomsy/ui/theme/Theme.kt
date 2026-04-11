@@ -5,10 +5,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
 private val DoomsyColorScheme = darkColorScheme(
-    primary = Gold,
+    primary = VillainOrange,
     onPrimary = DeepBlack,
-    primaryContainer = GoldSubtle,
-    secondary = Amber,
+    primaryContainer = VillainOrangeSubtle,
+    secondary = VillainOrange,
     onSecondary = DeepBlack,
     background = Void,
     onBackground = OffWhite,

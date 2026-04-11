@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.ui.theme.DeepBlack
-import com.mrbitches.doomsy.ui.theme.GlassIvory
-import com.mrbitches.doomsy.ui.theme.SoftGoldBorder
+import com.mrbitches.doomsy.ui.theme.GlassStark
+import com.mrbitches.doomsy.ui.theme.SoftOrangeBorder
 import com.mrbitches.doomsy.util.Anim
 import kotlinx.coroutines.delay
 
@@ -68,8 +68,8 @@ fun QuipOverlay(
                 modifier = Modifier
                     .widthIn(max = 220.dp)
                     .clip(shape)
-                    .background(GlassIvory)
-                    .border(1.dp, SoftGoldBorder, shape)
+                    .background(GlassStark)
+                    .border(1.dp, SoftOrangeBorder, shape)
                     .padding(horizontal = 18.dp, vertical = 14.dp),
             ) {
                 Text(

@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.Message
 import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.FrostBorder
-import com.mrbitches.doomsy.ui.theme.GlassIvory
+import com.mrbitches.doomsy.ui.theme.GlassStark
 import com.mrbitches.doomsy.ui.theme.GlassSmoke
 import com.mrbitches.doomsy.ui.theme.OffWhite
-import com.mrbitches.doomsy.ui.theme.SoftGoldBorder
+import com.mrbitches.doomsy.ui.theme.SoftOrangeBorder
 import com.mrbitches.doomsy.util.Anim
 import kotlinx.coroutines.delay
 
@@ -65,11 +65,11 @@ fun ChatBubble(message: Message, animate: Boolean = false) {
                 .clip(shape)
                 .background(
                     if (isUser) GlassSmoke
-                    else GlassIvory,
+                    else GlassStark,
                 )
                 .border(
                     width = 1.dp,
-                    color = if (isUser) FrostBorder else SoftGoldBorder,
+                    color = if (isUser) FrostBorder else SoftOrangeBorder,
                     shape = shape,
                 )
                 .padding(horizontal = 15.dp, vertical = 11.dp),

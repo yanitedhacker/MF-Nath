@@ -38,7 +38,7 @@ val DoomsyTypography = Typography(
         fontSize = 18.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp,
-        color = Gold,
+        color = VillainOrange,
     ),
     titleMedium = TextStyle(
         fontFamily = InterFontFamily,
@@ -73,7 +73,7 @@ val DoomsyTypography = Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        color = Gold,
+        color = VillainOrange,
     ),
     labelMedium = TextStyle(
         fontFamily = InterFontFamily,
@@ -81,7 +81,7 @@ val DoomsyTypography = Typography(
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 1.sp,
-        color = GoldDim,
+        color = VillainOrangeDim,
     ),
     labelSmall = TextStyle(
         fontFamily = InterFontFamily,

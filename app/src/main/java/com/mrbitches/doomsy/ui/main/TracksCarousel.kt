@@ -11,8 +11,12 @@ import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.DoomTracks
 
 @Composable
-fun TracksCarousel(modifier: Modifier = Modifier) {
-    val tracks = remember { DoomTracks.randomSelection(10) }
+fun TracksCarousel(
+    modifier: Modifier = Modifier,
+    /** Increments each time the tracks panel is opened; new shuffle per open. */
+    shuffleKey: Int,
+) {
+    val tracks = remember(shuffleKey) { DoomTracks.randomSelection(10) }
 
     LazyRow(
         modifier = modifier,

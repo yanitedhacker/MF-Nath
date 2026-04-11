@@ -1,10 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
-val doomsyApiBaseUrl = providers.gradleProperty("doomsyApiBaseUrl").orElse("").get()
+val doomsyApiBaseUrlFromLocal: String =
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { stream ->
+        Properties().apply { load(stream) }.getProperty("doomsyApiBaseUrl", "").trim()
+    }.orEmpty()
+
+val doomsyApiBaseUrl =
+    providers.gradleProperty("doomsyApiBaseUrl").orElse("").map { it.trim() }.get()
+        .ifBlank { doomsyApiBaseUrlFromLocal }
+
 val escapedDoomsyApiBaseUrl = doomsyApiBaseUrl
     .replace("\\", "\\\\")
     .replace("\"", "\\\"")

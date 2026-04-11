@@ -29,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,15 +47,15 @@ import com.mrbitches.doomsy.ui.chat.ChatMessageStack
 import com.mrbitches.doomsy.ui.chat.ChatSignalChip
 import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.DimGrey
-import com.mrbitches.doomsy.ui.theme.FogSilver
+import com.mrbitches.doomsy.ui.theme.AshGrey
 import com.mrbitches.doomsy.ui.theme.FrostBorder
-import com.mrbitches.doomsy.ui.theme.GlassIvory
-import com.mrbitches.doomsy.ui.theme.Gold
-import com.mrbitches.doomsy.ui.theme.GoldDim
-import com.mrbitches.doomsy.ui.theme.GoldSubtle
-import com.mrbitches.doomsy.ui.theme.Ivory
-import com.mrbitches.doomsy.ui.theme.Pearl
-import com.mrbitches.doomsy.ui.theme.SoftGoldBorder
+import com.mrbitches.doomsy.ui.theme.GlassStark
+import com.mrbitches.doomsy.ui.theme.VillainOrange
+import com.mrbitches.doomsy.ui.theme.VillainOrangeDim
+import com.mrbitches.doomsy.ui.theme.VillainOrangeSubtle
+import com.mrbitches.doomsy.ui.theme.StarkGrey
+import com.mrbitches.doomsy.ui.theme.StarkWhite
+import com.mrbitches.doomsy.ui.theme.SoftOrangeBorder
 import com.mrbitches.doomsy.ui.theme.StormInk
 
 @Composable
@@ -64,11 +66,16 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
     val isCloudReachable by viewModel.isCloudReachable.collectAsState()
     val currentQuip by viewModel.currentQuip.collectAsState()
     var isMusicExpanded by rememberSaveable { mutableStateOf(false) }
+    var trackShuffleKey by remember { mutableIntStateOf(0) }
+    val toggleMusicTray = {
+        if (!isMusicExpanded) trackShuffleKey++
+        isMusicExpanded = !isMusicExpanded
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Pearl),
+            .background(StarkGrey),
     ) {
         AtmosphericBackdrop()
 
@@ -80,22 +87,6 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
             verticalOffset = 0.03f,
             horizontalOffset = -0.14f,
             idleRotationSpan = 3.6f,
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.48f)
-                .align(Alignment.CenterEnd)
-                .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Ivory.copy(alpha = 0.32f),
-                            Pearl.copy(alpha = 0.8f),
-                        ),
-                    ),
-                ),
         )
 
         QuipOverlay(
@@ -112,7 +103,7 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .imePadding()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(horizontal = 24.dp, vertical = 24.dp),
         ) {
             Row(
                 modifier = Modifier
@@ -128,7 +119,7 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
 
                 UtilityPill(
                     text = if (isMusicExpanded) "Hide ^" else "Tracks v",
-                    onClick = { isMusicExpanded = !isMusicExpanded },
+                    onClick = toggleMusicTray,
                 )
             }
 
@@ -164,7 +155,8 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
 
             MusicTray(
                 expanded = isMusicExpanded,
-                onToggle = { isMusicExpanded = !isMusicExpanded },
+                trackShuffleKey = trackShuffleKey,
+                onToggle = toggleMusicTray,
             )
 
             Spacer(modifier = Modifier.size(12.dp))
@@ -186,7 +178,7 @@ private fun AtmosphericBackdrop() {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Pearl, Ivory, FogSilver),
+                        colors = listOf(StarkWhite, StarkGrey, AshGrey),
                     ),
                 ),
         )
@@ -197,44 +189,15 @@ private fun AtmosphericBackdrop() {
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            Pearl.copy(alpha = 0.95f),
+                            StarkWhite.copy(alpha = 0.8f),
                             Color.Transparent,
                         ),
                         radius = 1250f,
                     ),
                 ),
         )
-
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Ivory.copy(alpha = 0.12f),
-                            Pearl.copy(alpha = 0.56f),
-                        ),
-                    ),
-                ),
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxHeight()
-                .width(2.dp)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            GoldSubtle.copy(alpha = 0f),
-                            GoldDim.copy(alpha = 0.52f),
-                            GoldSubtle.copy(alpha = 0f),
-                        ),
-                    ),
-                ),
-        )
+        
+        // Remove the vertical gradient overlay that was washing out the bottom
     }
 }
 
@@ -245,9 +208,9 @@ private fun StatusCluster(
     isCloudReachable: Boolean,
 ) {
     val indicatorColor = when {
-        isGenerating -> Gold
-        isCloudReachable -> GoldDim
-        isCloudConfigured -> GoldSubtle
+        isGenerating -> VillainOrange
+        isCloudReachable -> VillainOrangeDim
+        isCloudConfigured -> VillainOrangeSubtle
         else -> DimGrey
     }
     val statusText = when {
@@ -261,7 +224,7 @@ private fun StatusCluster(
     Column(
         modifier = Modifier
             .clip(shape)
-            .background(GlassIvory)
+            .background(GlassStark)
             .border(1.dp, FrostBorder, shape)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -269,7 +232,7 @@ private fun StatusCluster(
         Text(
             text = "DOOMSY",
             style = MaterialTheme.typography.labelMedium.copy(
-                color = GoldDim,
+                color = VillainOrangeDim,
             ),
         )
 
@@ -301,8 +264,8 @@ private fun UtilityPill(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(18.dp))
-            .background(GlassIvory)
-            .border(1.dp, SoftGoldBorder, RoundedCornerShape(18.dp))
+            .background(GlassStark)
+            .border(1.dp, SoftOrangeBorder, RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
@@ -318,6 +281,7 @@ private fun UtilityPill(
 @Composable
 private fun MusicTray(
     expanded: Boolean,
+    trackShuffleKey: Int,
     onToggle: () -> Unit,
 ) {
     val shape = RoundedCornerShape(28.dp)
@@ -326,9 +290,9 @@ private fun MusicTray(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(GlassIvory)
+            .background(GlassStark)
             .border(1.dp, FrostBorder, shape)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 24.dp, vertical = 24.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -342,7 +306,7 @@ private fun MusicTray(
                 Text(
                     text = "DOOM scriptures",
                     style = MaterialTheme.typography.labelMedium.copy(
-                        color = GoldDim,
+                        color = VillainOrangeDim,
                     ),
                 )
                 Text(
@@ -371,6 +335,7 @@ private fun MusicTray(
                 Spacer(modifier = Modifier.size(14.dp))
                 TracksCarousel(
                     modifier = Modifier.fillMaxWidth(),
+                    shuffleKey = trackShuffleKey,
                 )
             }
         }

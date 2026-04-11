@@ -7,8 +7,8 @@ import org.junit.Test
 class DoomTracksTest {
 
     @Test
-    fun `track pool has at least 25 songs`() {
-        assertTrue(DoomTracks.allTracks.size >= 25)
+    fun `track pool has at least 35 songs`() {
+        assertTrue(DoomTracks.allTracks.size >= 35)
     }
 
     @Test
@@ -24,9 +24,10 @@ class DoomTracksTest {
     }
 
     @Test
-    fun `every track has a non-empty name and album`() {
+    fun `every track has a non-empty name artist and album`() {
         DoomTracks.allTracks.forEach { track ->
             assertTrue("Track name is empty", track.name.isNotBlank())
+            assertTrue("Artist is empty for ${track.name}", track.artist.isNotBlank())
             assertTrue("Album is empty for ${track.name}", track.album.isNotBlank())
         }
     }

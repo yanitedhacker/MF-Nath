@@ -31,13 +31,13 @@ import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.Message
 import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.FrostBorder
-import com.mrbitches.doomsy.ui.theme.GlassIvory
+import com.mrbitches.doomsy.ui.theme.GlassStark
 import com.mrbitches.doomsy.ui.theme.GlassSmoke
-import com.mrbitches.doomsy.ui.theme.Gold
-import com.mrbitches.doomsy.ui.theme.GoldDim
+import com.mrbitches.doomsy.ui.theme.VillainOrange
+import com.mrbitches.doomsy.ui.theme.VillainOrangeDim
 import com.mrbitches.doomsy.ui.theme.MistGrey
 import com.mrbitches.doomsy.ui.theme.MutedGrey
-import com.mrbitches.doomsy.ui.theme.SoftGoldBorder
+import com.mrbitches.doomsy.ui.theme.SoftOrangeBorder
 
 @Composable
 fun ChatMessageStack(
@@ -50,7 +50,7 @@ fun ChatMessageStack(
 
     Column(
         modifier = modifier.widthIn(max = 320.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.End,
     ) {
         visibleMessages.forEach { message ->
@@ -79,9 +79,9 @@ fun ChatComposer(
     Row(
         modifier = modifier
             .clip(shape)
-            .background(GlassIvory)
-            .border(1.dp, SoftGoldBorder, shape)
-            .padding(horizontal = 10.dp, vertical = 10.dp),
+            .background(GlassStark)
+            .border(1.dp, SoftOrangeBorder, shape)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         VoiceInputButton(
@@ -101,7 +101,7 @@ fun ChatComposer(
             singleLine = false,
             maxLines = 4,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = DeepBlack),
-            cursorBrush = SolidColor(Gold),
+            cursorBrush = SolidColor(VillainOrange),
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp, vertical = 8.dp),
@@ -142,7 +142,7 @@ fun ChatComposer(
             Text(
                 text = ">",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    color = if (canSend) Gold else MutedGrey,
+                    color = if (canSend) VillainOrange else MutedGrey,
                 ),
             )
         }
@@ -154,14 +154,14 @@ fun ChatSignalChip(text: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(18.dp))
-            .background(GlassIvory)
+            .background(GlassStark)
             .border(1.dp, FrostBorder, RoundedCornerShape(18.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall.copy(
-                color = GoldDim,
+                color = VillainOrangeDim,
             ),
         )
     }
@@ -172,8 +172,8 @@ private fun TypingChip() {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(18.dp))
-            .background(GlassIvory)
-            .border(1.dp, SoftGoldBorder, RoundedCornerShape(18.dp))
+            .background(GlassStark)
+            .border(1.dp, SoftOrangeBorder, RoundedCornerShape(18.dp))
             .padding(horizontal = 12.dp, vertical = 9.dp),
     ) {
         Text(

@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.GlassWhiteBorder
-import com.mrbitches.doomsy.ui.theme.Gold
+import com.mrbitches.doomsy.ui.theme.VillainOrange
 import com.mrbitches.doomsy.ui.theme.GunmetalLight
 import com.mrbitches.doomsy.ui.theme.OffWhite
 import java.util.Locale
@@ -46,7 +46,7 @@ fun VoiceInputButton(
     val context = LocalContext.current
     var isListening by remember { mutableStateOf(false) }
     val bgColor by animateColorAsState(
-        targetValue = if (isListening) Gold else GunmetalLight,
+        targetValue = if (isListening) VillainOrange else GunmetalLight,
         label = "micBg",
     )
     val recognizerIntent = remember {
@@ -118,7 +118,7 @@ fun VoiceInputButton(
         Text(
             text = if (isListening) "\u2026" else "mic",
             style = MaterialTheme.typography.labelSmall.copy(
-                color = if (isListening) DeepBlack else Gold,
+                color = if (isListening) DeepBlack else VillainOrange,
             ),
         )
     }

@@ -10,22 +10,20 @@ val GunmetalGrey = Color(0xFF1A1A1F)
 val GunmetalLight = Color(0xFF26262E)
 val Charcoal = Color(0xFF2E2E36)
 
-// Golds
-val Gold = Color(0xFFD4AF37)
-val GoldBright = Color(0xFFE8C547)
-val GoldDim = Color(0x99D4AF37)
-val GoldSubtle = Color(0x33D4AF37)
-val Amber = Color(0xFFCB8B2A)
+// Madvillain Orange
+val VillainOrange = Color(0xFFF25822)
+val VillainOrangeDim = Color(0x99F25822)
+val VillainOrangeSubtle = Color(0x33F25822)
 
 // Neutrals
 val BrushedSilver = Color(0xFF8E8E93)
 val OffWhite = Color(0xFFF5F5F7)
 val MutedGrey = Color(0xFF6E6E73)
 val DimGrey = Color(0xFF48484A)
-val Ivory = Color(0xFFF3EEE3)
-val Pearl = Color(0xFFF9F6EF)
-val FogSilver = Color(0xFFD8D4CC)
-val SilverSmoke = Color(0xFFB7B1A8)
+val StarkWhite = Color(0xFFFFFFFF)
+val StarkGrey = Color(0xFFE5E5E5)
+val AshGrey = Color(0xFFCCCCCC)
+val MadvillainSilver = Color(0xFFAAAAAA)
 val StormInk = Color(0xFF2A2A30)
 val MistGrey = Color(0xFF8A8C92)
 
@@ -34,11 +32,11 @@ val GlassBlack = Color(0xCC0A0A0A)
 val GlassDark = Color(0xE6111114)
 val GlassWhite = Color(0x1AFFFFFF)
 val GlassWhiteBorder = Color(0x22FFFFFF)
-val GlassGold = Color(0x1AD4AF37)
-val GlassIvory = Color(0xCCFBF8F1)
-val GlassSmoke = Color(0x88A0A4AD)
-val FrostBorder = Color(0x66FFFFFF)
-val SoftGoldBorder = Color(0x66D4AF37)
+val GlassOrange = Color(0x1AF25822)
+val GlassStark = Color(0xFFFFFFFF) // Opaque white for maximum contrast
+val GlassSmoke = Color(0xFFE5E5E5) // Opaque light grey
+val FrostBorder = Color(0xFF000000) // Pure black border for contrast
+val SoftOrangeBorder = Color(0xFFF25822) // Pure orange border
 
 // Accent
 val VinylRed = Color(0xFF8B2525)

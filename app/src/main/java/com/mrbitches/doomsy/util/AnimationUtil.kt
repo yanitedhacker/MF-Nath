@@ -19,9 +19,9 @@ object Anim {
         stiffness = Spring.StiffnessHigh,
     )
 
-    const val INTRO_SLIDE_HOLD = 1200L
-    const val INTRO_SLIDE_TRANSITION = 320L
-    const val INTRO_OUTRO_FADE = 420L
+    const val INTRO_SLIDE_HOLD = 2200L
+    const val INTRO_SLIDE_TRANSITION = 750L
+    const val INTRO_OUTRO_FADE = 600L
 
     const val QUIP_DISPLAY_DURATION = 3000L
     const val QUIP_FADE_DURATION = 400L
