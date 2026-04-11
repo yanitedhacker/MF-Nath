@@ -5,7 +5,6 @@
 #include <thread>
 
 #include "llama.h"
-#include "common.h"
 
 #define TAG "DoomsyLLM"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
@@ -78,8 +77,6 @@ Java_com_mrbitches_doomsy_llm_LlamaBridge_generate(
     }
     tokens.resize(n_tokens);
 
-    llama_kv_cache_clear(ctx);
-
     llama_batch batch = llama_batch_get_one(tokens.data(), n_tokens);
     if (llama_decode(ctx, batch) != 0) {
         LOGE("Decode failed");
@@ -87,7 +84,6 @@ Java_com_mrbitches_doomsy_llm_LlamaBridge_generate(
     }
 
     std::string result;
-    const llama_token eos = llama_vocab_eos(vocab);
 
     for (int i = 0; i < maxTokens; i++) {
         llama_token new_token = llama_sampler_sample(sampler, ctx, -1);

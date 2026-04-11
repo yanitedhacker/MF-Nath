@@ -15,9 +15,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import com.mrbitches.doomsy.util.Haptic
 import io.github.sceneview.Scene
-import io.github.sceneview.math.Position
-import io.github.sceneview.math.Rotation
-import io.github.sceneview.node.ModelNode
+import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberEnvironment
 import io.github.sceneview.rememberModelLoader
@@ -84,10 +82,9 @@ fun DoomsyViewer(
                     modelInstance = modelInstance,
                     scaleToUnits = targetScale,
                     autoAnimate = true,
-                ).apply {
-                    position = Position(y = breathOffset)
-                    rotation = Rotation(y = headSway)
-                }
+                    position = Float3(0f, breathOffset, 0f),
+                    rotation = Float3(0f, headSway, 0f),
+                )
             }
         }
     }

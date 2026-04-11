@@ -19,7 +19,6 @@ target_include_directories(doomsy PRIVATE
 target_link_libraries(doomsy
     llama
     ggml
-    common
     android
     log
 )
