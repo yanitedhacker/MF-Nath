@@ -65,7 +65,7 @@ This repository is meant to be forked, themed, and self-hosted—swap assets, pr
 | Path | Purpose |
 |------|---------|
 | `app/` | Android application module (Kotlin, Compose, assets). |
-| `app/src/main/assets/models/doomsy.glb` | Hero 3D model (GLB; not always committed—add your own export). |
+| `app/src/main/assets/models/doomsy.glb` | Hero 3D model (GLB). **Not stored in this repo** (see [Customization](#customization-checklist)); add the file locally after clone. |
 | `app/src/main/java/.../data/DoomTracks.kt` | Track metadata + Spotify URIs + shuffle helper. |
 | `worker/` | Cloudflare Worker: `npm install`, `npm run deploy` via Wrangler. |
 | `worker/src/prompt.js` | Server-side system prompt for the chat model. |
@@ -131,7 +131,7 @@ Unit tests cover data helpers (tracks, intents, conversation pieces, etc.). Adju
 
 ## Customization checklist
 
-- Replace `app/src/main/assets/models/doomsy.glb` with your own **GLB** (keep reasonable size for mobile).
+- Add `app/src/main/assets/models/doomsy.glb` after clone (it is **gitignored** to keep the repository small). Use any reasonable-size **GLB** for the hero bust (e.g. export from Meshy or another tool).
 - Edit **`DoomTracks.kt`** for artists, albums, and `spotify:track:` IDs (verify on device).
 - Edit **`worker/src/prompt.js`** for persona and safety boundaries.
 - Tune **`worker/wrangler.jsonc`** model id and token limits in `worker/src/index.js` if your use case needs longer replies.

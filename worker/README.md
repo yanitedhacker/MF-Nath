@@ -4,7 +4,7 @@ This Worker keeps the real Doomsy system prompt off the APK and sends chat reque
 
 ## Deploy
 
-1. `cd /Users/archishmanpaul/Desktop/MF-Nath/worker`
+1. `cd worker` (from the repository root)
 2. `npm install`
 3. `npx wrangler whoami`
 4. `npm run deploy`

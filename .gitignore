@@ -44,7 +44,13 @@ pnpm-debug.log*
 *.onnx
 *.tflite
 
-# Large media (keep glb tracked since it's the 3D model)
+# Root / debug captures (do not commit)
+/screen*.png
+
+# 3D model — add locally or fetch from a release (too large for normal git)
+app/src/main/assets/models/*.glb
+
+# Large media
 *.mp4
 *.mov
 *.avi
