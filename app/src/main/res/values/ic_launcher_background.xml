@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Matches generated launcher artwork base tone -->
-    <color name="ic_launcher_background">#EDE8E3</color>
+    <!-- Album-art field tone (Madvillainy-style cover crop) -->
+    <color name="ic_launcher_background">#E6E4E0</color>
 </resources>

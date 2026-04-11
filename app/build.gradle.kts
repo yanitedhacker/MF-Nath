@@ -27,8 +27,8 @@ android {
         applicationId = "com.mrbitches.doomsy"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.0-rc.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,6 +39,8 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            // RC / sideload: signed with debug keystore. Use a release keystore + signingConfig for Play Store.
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

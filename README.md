@@ -84,6 +84,19 @@ From the repo root:
 
 Open the project in Android Studio and run on an emulator or device (API 26+).
 
+### Release candidate (signed APK + bundle)
+
+```bash
+./gradlew :app:assembleRelease :app:bundleRelease
+```
+
+Outputs:
+
+- **APK (sideload):** `app/build/outputs/apk/release/app-release.apk`
+- **AAB (Play-style):** `app/build/outputs/bundle/release/app-release.aab`
+
+Release builds are configured to sign with the **debug keystore** so you can install the RC immediately (`adb install -r app/build/outputs/apk/release/app-release.apk`). For Google Play, add a proper `signingConfigs { release { ... } }` with your upload keystore and remove the debug `signingConfig` line from the `release` build type.
+
 ### Point the app at your Worker (optional)
 
 **Option A — `local.properties`** (gitignored; good for local dev):
