@@ -132,6 +132,7 @@ Unit tests cover data helpers (tracks, intents, conversation pieces, etc.). Adju
 ## Customization checklist
 
 - Add `app/src/main/assets/models/doomsy.glb` after clone (it is **gitignored** to keep the repository small). Use any reasonable-size **GLB** for the hero bust (e.g. export from Meshy or another tool).
+- **Launcher icon:** adaptive icons live under `app/src/main/res/mipmap-*` and `mipmap-anydpi-v26/`; background color is `ic_launcher_background` in `values/ic_launcher_background.xml`. Replace the generated bitmaps if you want a different mark.
 - Edit **`DoomTracks.kt`** for artists, albums, and `spotify:track:` IDs (verify on device).
 - Edit **`worker/src/prompt.js`** for persona and safety boundaries.
 - Tune **`worker/wrangler.jsonc`** model id and token limits in `worker/src/index.js` if your use case needs longer replies.
