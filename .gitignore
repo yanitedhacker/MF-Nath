@@ -1,0 +1,16 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.ap_
+*.dex
+*.class
+*.aar
+# Large model files - track separately
+app/src/main/assets/gemma-4-e2b-q4_k_m.gguf
