@@ -27,8 +27,8 @@ android {
         applicationId = "com.mrbitches.doomsy"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.0-rc.1"
+        versionCode = 3
+        versionName = "1.0.0-rc.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
