@@ -1,1 +1,1 @@
--keep class com.mrbitches.doomsy.llm.LlamaBridge { *; }
+# Add release-only keep rules here if new reflection or serialization paths need them.

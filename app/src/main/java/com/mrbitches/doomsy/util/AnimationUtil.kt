@@ -19,13 +19,9 @@ object Anim {
         stiffness = Spring.StiffnessHigh,
     )
 
-    const val INTRO_RUMBLE_DELAY = 500L
-    const val INTRO_MASK_FADE_START = 1000L
-    const val INTRO_MASK_FADE_DURATION = 1500L
-    const val INTRO_MESSAGE_FADE_START = 3500L
-    const val INTRO_MESSAGE_FADE_DURATION = 800L
-    const val INTRO_TOTAL_DURATION = 5500L
-    const val INTRO_FADE_OUT_DURATION = 600L
+    const val INTRO_SLIDE_HOLD = 1200L
+    const val INTRO_SLIDE_TRANSITION = 320L
+    const val INTRO_OUTRO_FADE = 420L
 
     const val QUIP_DISPLAY_DURATION = 3000L
     const val QUIP_FADE_DURATION = 400L

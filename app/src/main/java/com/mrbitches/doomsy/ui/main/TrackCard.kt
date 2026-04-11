@@ -23,12 +23,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.DoomTrack
 import com.mrbitches.doomsy.ui.theme.DeepBlack
-import com.mrbitches.doomsy.ui.theme.GlassWhite
-import com.mrbitches.doomsy.ui.theme.GlassWhiteBorder
+import com.mrbitches.doomsy.ui.theme.DimGrey
+import com.mrbitches.doomsy.ui.theme.FrostBorder
+import com.mrbitches.doomsy.ui.theme.GlassIvory
 import com.mrbitches.doomsy.ui.theme.Gold
 import com.mrbitches.doomsy.ui.theme.GunmetalLight
-import com.mrbitches.doomsy.ui.theme.MutedGrey
-import com.mrbitches.doomsy.ui.theme.OffWhite
 import com.mrbitches.doomsy.util.SpotifyIntent
 
 @Composable
@@ -38,11 +37,12 @@ fun TrackCard(track: DoomTrack, modifier: Modifier = Modifier) {
 
     Row(
         modifier = modifier
+            .width(212.dp)
             .clip(shape)
-            .background(GlassWhite)
-            .border(0.5.dp, GlassWhiteBorder, shape)
+            .background(GlassIvory)
+            .border(1.dp, FrostBorder, shape)
             .clickable { SpotifyIntent.open(context, track.spotifyUri) }
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Mini vinyl disc icon
@@ -67,13 +67,13 @@ fun TrackCard(track: DoomTrack, modifier: Modifier = Modifier) {
         Column {
             Text(
                 text = track.name,
-                style = MaterialTheme.typography.labelLarge.copy(color = OffWhite),
+                style = MaterialTheme.typography.labelLarge.copy(color = DeepBlack),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = track.album,
-                style = MaterialTheme.typography.labelSmall.copy(color = MutedGrey),
+                style = MaterialTheme.typography.labelSmall.copy(color = DimGrey),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

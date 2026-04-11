@@ -12,12 +12,12 @@ import com.mrbitches.doomsy.data.DoomTracks
 
 @Composable
 fun TracksCarousel(modifier: Modifier = Modifier) {
-    val tracks = remember { DoomTracks.randomSelection(8) }
+    val tracks = remember { DoomTracks.randomSelection(10) }
 
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(tracks, key = { it.spotifyUri }) { track ->
             TrackCard(track = track)

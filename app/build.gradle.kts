@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val doomsyApiBaseUrl = providers.gradleProperty("doomsyApiBaseUrl").orElse("").get()
+val escapedDoomsyApiBaseUrl = doomsyApiBaseUrl
+    .replace("\\", "\\\\")
+    .replace("\"", "\\\"")
+
 android {
     namespace = "com.mrbitches.doomsy"
     compileSdk = 35
@@ -17,9 +22,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        ndk {
-            abiFilters += listOf("arm64-v8a")
-        }
+        buildConfigField("String", "DOOMSY_API_BASE_URL", "\"$escapedDoomsyApiBaseUrl\"")
     }
 
     buildTypes {
@@ -45,26 +48,17 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
-
     androidResources {
-        noCompress += listOf("gguf", "glb", "part_aa", "part_ab")
+        noCompress += listOf("glb")
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-        jniLibs {
-            useLegacyPackaging = true
         }
     }
 }

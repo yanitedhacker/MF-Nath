@@ -29,7 +29,10 @@ fun DoomsyViewer(
     modifier: Modifier = Modifier,
     onTap: () -> Unit = {},
     onLongPress: () -> Unit = {},
-    scaledDown: Boolean = false,
+    scaleToUnits: Float = 0.72f,
+    verticalOffset: Float = 0.02f,
+    horizontalOffset: Float = -0.12f,
+    idleRotationSpan: Float = 4f,
 ) {
     val context = LocalContext.current
     val engine = rememberEngine()
@@ -40,8 +43,8 @@ fun DoomsyViewer(
 
     // Subtle breathing bob
     val breathOffset by infiniteTransition.animateFloat(
-        initialValue = -0.015f,
-        targetValue = 0.015f,
+        initialValue = -0.012f,
+        targetValue = 0.012f,
         animationSpec = infiniteRepeatable(
             animation = tween(3000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse,
@@ -51,8 +54,8 @@ fun DoomsyViewer(
 
     // Slow idle sway
     val idleRotation by infiniteTransition.animateFloat(
-        initialValue = -6f,
-        targetValue = 6f,
+        initialValue = -idleRotationSpan,
+        targetValue = idleRotationSpan,
         animationSpec = infiniteRepeatable(
             animation = tween(7000),
             repeatMode = RepeatMode.Reverse,
@@ -60,18 +63,21 @@ fun DoomsyViewer(
         label = "idleRotation",
     )
 
-    // Smooth scale transition when chat opens/closes
     val targetScale by animateFloatAsState(
-        targetValue = if (scaledDown) 0.55f else 0.85f,
+        targetValue = scaleToUnits,
         animationSpec = spring(dampingRatio = 0.75f, stiffness = 150f),
         label = "scale",
     )
 
-    // Model shifts up when chat opens so it's visible above the sheet
     val yOffset by animateFloatAsState(
-        targetValue = if (scaledDown) 0.35f else -0.15f,
+        targetValue = verticalOffset,
         animationSpec = spring(dampingRatio = 0.75f, stiffness = 150f),
         label = "yOffset",
+    )
+    val xOffset by animateFloatAsState(
+        targetValue = horizontalOffset,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 150f),
+        label = "xOffset",
     )
 
     Box(modifier = modifier) {
@@ -100,7 +106,7 @@ fun DoomsyViewer(
                     modelInstance = modelInstance,
                     scaleToUnits = targetScale,
                     autoAnimate = true,
-                    position = Float3(0f, yOffset + breathOffset, 0f),
+                    position = Float3(xOffset, yOffset + breathOffset, 0f),
                     rotation = Float3(0f, idleRotation, 0f),
                 )
             }

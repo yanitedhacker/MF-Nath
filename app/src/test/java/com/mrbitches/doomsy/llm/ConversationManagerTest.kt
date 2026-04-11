@@ -15,21 +15,16 @@ class ConversationManagerTest {
     }
 
     @Test
-    fun `buildPrompt includes system prompt`() {
-        val prompt = manager.buildPrompt("hello")
-        assertTrue(prompt.contains("You are Doomsy"))
-    }
-
-    @Test
-    fun `buildPrompt includes user message`() {
-        val prompt = manager.buildPrompt("yo what's up")
-        assertTrue(prompt.contains("yo what's up"))
+    fun `history starts empty`() {
+        assertTrue(manager.history.isEmpty())
     }
 
     @Test
     fun `addExchange stores messages`() {
         manager.addExchange("hello", "The villain greets you.")
         assertEquals(1, manager.history.size)
+        assertEquals("hello", manager.history.first().userMessage)
+        assertEquals("The villain greets you.", manager.history.first().assistantResponse)
     }
 
     @Test
@@ -42,12 +37,16 @@ class ConversationManagerTest {
     }
 
     @Test
-    fun `buildPrompt includes conversation history`() {
-        manager.addExchange("first", "response one")
-        val prompt = manager.buildPrompt("second")
-        assertTrue(prompt.contains("first"))
-        assertTrue(prompt.contains("response one"))
-        assertTrue(prompt.contains("second"))
+    fun `custom exchange cap is respected`() {
+        val customManager = ConversationManager(maxExchanges = 2)
+
+        customManager.addExchange("first", "one")
+        customManager.addExchange("second", "two")
+        customManager.addExchange("third", "three")
+
+        assertEquals(2, customManager.history.size)
+        assertEquals("second", customManager.history.first().userMessage)
+        assertEquals("third", customManager.history.last().userMessage)
     }
 
     @Test

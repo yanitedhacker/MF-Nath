@@ -1,0 +1,16 @@
+{
+  "name": "doomsy-chat",
+  "main": "src/index.js",
+  "compatibility_date": "2026-04-11",
+  "workers_dev": true,
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
+  "vars": {
+    "DOOMSY_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

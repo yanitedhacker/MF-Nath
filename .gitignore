@@ -9,6 +9,18 @@
 /captures
 .externalNativeBuild
 .cxx
+node_modules/
+.wrangler/
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+!.env.*.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Binaries & archives
 *.apk
@@ -22,6 +34,7 @@
 *.a
 
 # Large model / asset files
+/app/local-model-assets/
 *.gguf
 *.gguf.part_*
 *.bin
@@ -41,3 +54,6 @@
 # IDE / OS
 *.hprof
 *.log
+*.jks
+*.keystore
+*.orig

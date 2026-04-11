@@ -1,125 +1,132 @@
 package com.mrbitches.doomsy.ui.intro
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mrbitches.doomsy.ui.theme.Gold
+import androidx.compose.ui.unit.sp
+import com.mrbitches.doomsy.ui.theme.DeepBlack
+import com.mrbitches.doomsy.ui.theme.FogSilver
 import com.mrbitches.doomsy.ui.theme.GoldDim
-import com.mrbitches.doomsy.ui.theme.OffWhite
-import com.mrbitches.doomsy.ui.theme.Void
+import com.mrbitches.doomsy.ui.theme.GoldSubtle
+import com.mrbitches.doomsy.ui.theme.Ivory
+import com.mrbitches.doomsy.ui.theme.Pearl
+import com.mrbitches.doomsy.ui.theme.SilverSmoke
 import com.mrbitches.doomsy.util.Anim
-import com.mrbitches.doomsy.util.Haptic
 import kotlinx.coroutines.delay
+
+private val introSlides = listOf(
+    "Carti fan allegations still active.",
+    "Car money still uncollected. Doomsy remembers.",
+    "Nathaniel Leo Messi Syiem stays on the villain's ledger.",
+    "Mr. Bitches sent the mask so the room don't go empty.",
+)
 
 @Composable
 fun IntroScreen(onIntroComplete: () -> Unit) {
-    val context = LocalContext.current
-
-    val glintAlpha = remember { Animatable(0f) }
-    val maskAlpha = remember { Animatable(0f) }
-    val messageAlpha = remember { Animatable(0f) }
+    var slideIndex by remember { mutableIntStateOf(0) }
     val screenAlpha = remember { Animatable(1f) }
 
     LaunchedEffect(Unit) {
-        delay(Anim.INTRO_RUMBLE_DELAY)
-        Haptic.introRumble(context)
-
-        delay(Anim.INTRO_MASK_FADE_START - Anim.INTRO_RUMBLE_DELAY)
-        glintAlpha.animateTo(1f, tween(400))
-        maskAlpha.animateTo(1f, tween(Anim.INTRO_MASK_FADE_DURATION.toInt()))
-
-        delay(Anim.INTRO_MESSAGE_FADE_START - Anim.INTRO_MASK_FADE_START - Anim.INTRO_MASK_FADE_DURATION)
-        messageAlpha.animateTo(1f, tween(Anim.INTRO_MESSAGE_FADE_DURATION.toInt()))
-
-        delay(Anim.INTRO_TOTAL_DURATION - Anim.INTRO_MESSAGE_FADE_START - Anim.INTRO_MESSAGE_FADE_DURATION)
-        screenAlpha.animateTo(0f, tween(Anim.INTRO_FADE_OUT_DURATION.toInt()))
-
+        while (slideIndex < introSlides.lastIndex) {
+            delay(Anim.INTRO_SLIDE_HOLD)
+            slideIndex++
+        }
+        delay(Anim.INTRO_SLIDE_HOLD)
+        screenAlpha.animateTo(0f, tween(Anim.INTRO_OUTRO_FADE.toInt()))
         onIntroComplete()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Void)
-            .alpha(screenAlpha.value),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 40.dp),
-        ) {
-            Box(
-                modifier = Modifier.size(160.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Canvas(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .alpha(glintAlpha.value),
-                ) {
-                    drawMaskSilhouette(maskAlpha.value)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Text(
-                text = "Since your ass is busy (again),\nMr. Bitches sent me, pussy",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = OffWhite,
-                    textAlign = TextAlign.Center,
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Pearl, Ivory, FogSilver),
                 ),
-                modifier = Modifier.alpha(messageAlpha.value),
             )
+            .alpha(screenAlpha.value),
+    ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxSize()
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            Pearl.copy(alpha = 0.95f),
+                            Pearl.copy(alpha = 0f),
+                        ),
+                        radius = 900f,
+                    ),
+                ),
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxHeight()
+                .width(2.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            GoldSubtle.copy(alpha = 0f),
+                            GoldDim.copy(alpha = 0.5f),
+                            GoldSubtle.copy(alpha = 0f),
+                        ),
+                    ),
+                ),
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 42.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Crossfade(
+                targetState = slideIndex,
+                animationSpec = tween(Anim.INTRO_SLIDE_TRANSITION.toInt()),
+                label = "introSlides",
+            ) { currentIndex ->
+                Text(
+                    text = introSlides[currentIndex],
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        color = DeepBlack,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 40.sp,
+                    ),
+                )
+            }
         }
+
+        Text(
+            text = "DOOMSY",
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = SilverSmoke,
+            ),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 52.dp),
+        )
     }
-}
-
-private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawMaskSilhouette(alpha: Float) {
-    val maskColor = Gold.copy(alpha = alpha)
-    val darkColor = Void.copy(alpha = alpha)
-
-    drawOval(
-        brush = Brush.verticalGradient(
-            colors = listOf(maskColor, GoldDim.copy(alpha = alpha)),
-        ),
-        size = size,
-    )
-
-    val slitWidth = size.width * 0.15f
-    val slitHeight = size.height * 0.08f
-    val slitY = size.height * 0.38f
-
-    drawRect(
-        color = darkColor,
-        topLeft = Offset(size.width * 0.22f, slitY),
-        size = Size(slitWidth, slitHeight),
-    )
-    drawRect(
-        color = darkColor,
-        topLeft = Offset(size.width * 0.63f, slitY),
-        size = Size(slitWidth, slitHeight),
-    )
 }

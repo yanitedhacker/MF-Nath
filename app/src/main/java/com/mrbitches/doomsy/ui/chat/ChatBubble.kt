@@ -3,7 +3,6 @@ package com.mrbitches.doomsy.ui.chat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -21,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.Message
-import com.mrbitches.doomsy.ui.theme.GlassGold
-import com.mrbitches.doomsy.ui.theme.GlassWhiteBorder
-import com.mrbitches.doomsy.ui.theme.Gold
-import com.mrbitches.doomsy.ui.theme.GoldSubtle
-import com.mrbitches.doomsy.ui.theme.GunmetalLight
+import com.mrbitches.doomsy.ui.theme.DeepBlack
+import com.mrbitches.doomsy.ui.theme.FrostBorder
+import com.mrbitches.doomsy.ui.theme.GlassIvory
+import com.mrbitches.doomsy.ui.theme.GlassSmoke
 import com.mrbitches.doomsy.ui.theme.OffWhite
+import com.mrbitches.doomsy.ui.theme.SoftGoldBorder
 import com.mrbitches.doomsy.util.Anim
 import kotlinx.coroutines.delay
 
@@ -35,10 +34,10 @@ fun ChatBubble(message: Message, animate: Boolean = false) {
     val isUser = message.isUser
 
     val shape = RoundedCornerShape(
-        topStart = 18.dp,
-        topEnd = 18.dp,
-        bottomStart = if (isUser) 18.dp else 4.dp,
-        bottomEnd = if (isUser) 4.dp else 18.dp,
+        topStart = 22.dp,
+        topEnd = 22.dp,
+        bottomStart = if (isUser) 22.dp else 10.dp,
+        bottomEnd = if (isUser) 10.dp else 22.dp,
     )
 
     var visibleChars by remember(message.text) {
@@ -62,23 +61,23 @@ fun ChatBubble(message: Message, animate: Boolean = false) {
     ) {
         Box(
             modifier = Modifier
-                .widthIn(max = 280.dp)
+                .widthIn(max = 272.dp)
                 .clip(shape)
                 .background(
-                    if (isUser) GunmetalLight
-                    else GlassGold,
+                    if (isUser) GlassSmoke
+                    else GlassIvory,
                 )
                 .border(
-                    width = 0.5.dp,
-                    color = if (isUser) GlassWhiteBorder else GoldSubtle,
+                    width = 1.dp,
+                    color = if (isUser) FrostBorder else SoftGoldBorder,
                     shape = shape,
                 )
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                .padding(horizontal = 15.dp, vertical = 11.dp),
         ) {
             Text(
                 text = displayText,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = OffWhite,
+                    color = if (isUser) OffWhite else DeepBlack,
                 ),
             )
         }

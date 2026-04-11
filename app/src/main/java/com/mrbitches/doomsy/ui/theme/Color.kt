@@ -22,6 +22,12 @@ val BrushedSilver = Color(0xFF8E8E93)
 val OffWhite = Color(0xFFF5F5F7)
 val MutedGrey = Color(0xFF6E6E73)
 val DimGrey = Color(0xFF48484A)
+val Ivory = Color(0xFFF3EEE3)
+val Pearl = Color(0xFFF9F6EF)
+val FogSilver = Color(0xFFD8D4CC)
+val SilverSmoke = Color(0xFFB7B1A8)
+val StormInk = Color(0xFF2A2A30)
+val MistGrey = Color(0xFF8A8C92)
 
 // Glass / translucent
 val GlassBlack = Color(0xCC0A0A0A)
@@ -29,6 +35,10 @@ val GlassDark = Color(0xE6111114)
 val GlassWhite = Color(0x1AFFFFFF)
 val GlassWhiteBorder = Color(0x22FFFFFF)
 val GlassGold = Color(0x1AD4AF37)
+val GlassIvory = Color(0xCCFBF8F1)
+val GlassSmoke = Color(0x88A0A4AD)
+val FrostBorder = Color(0x66FFFFFF)
+val SoftGoldBorder = Color(0x66D4AF37)
 
 // Accent
 val VinylRed = Color(0xFF8B2525)
