@@ -1,0 +1,4 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Debug-only: emulator user-net (10.0.2.2) and local Worker. -->
+    <application android:usesCleartextTraffic="true" />
+</manifest>
