@@ -171,13 +171,7 @@ fun ChatComposer(
                 .clip(CircleShape)
                 .background(if (canSend) DeepBlack else GlassSmoke)
                 .semantics { contentDescription = "Send message" }
-                .then(
-                    if (canSend) {
-                        Modifier.clickable { submit() }
-                    } else {
-                        Modifier
-                    },
-                ),
+                .clickable(enabled = canSend) { submit() },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
