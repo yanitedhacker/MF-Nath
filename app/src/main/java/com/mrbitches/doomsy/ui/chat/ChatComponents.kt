@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -147,6 +148,7 @@ fun ChatComposer(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp, vertical = 8.dp)
+                .testTag("doomsy_composer")
                 .semantics { contentDescription = "Message Doomsy" },
             decorationBox = { innerTextField ->
                 Box {

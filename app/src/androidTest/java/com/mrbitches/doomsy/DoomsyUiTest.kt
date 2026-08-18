@@ -1,12 +1,12 @@
 package com.mrbitches.doomsy
 
 import android.content.Context
-import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -69,13 +69,9 @@ class DoomsyUiTest {
     fun composerSendShowsReply() {
         skipIntro()
 
-        composeRule.onNodeWithContentDescription("Message Doomsy").performClick()
-        composeRule.onNodeWithContentDescription("Message Doomsy").performTextInput("hello")
-        composeRule.waitUntil(timeoutMillis = 8_000) {
-            runCatching {
-                composeRule.onNodeWithContentDescription("Send message").assertHasClickAction()
-            }.isSuccess
-        }
+        composeRule.onNodeWithTag("doomsy_composer").performClick()
+        composeRule.onNodeWithTag("doomsy_composer").performTextInput("hello")
+        composeRule.onNodeWithText("hello").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Send message").performClick()
 
         composeRule.waitUntil(timeoutMillis = 8_000) {
