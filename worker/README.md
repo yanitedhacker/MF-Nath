@@ -15,16 +15,23 @@ The deployed URL will look like:
 
 Useful routes:
 
-- `GET /health` — `{ ok, service, model }` for the Android launch probe
-- `POST /chat` — `{ message, history }` → `{ reply, model, source }`
+- `GET /health` — `{ ok, service, model, auth }` for the Android launch probe
+- `POST /chat` — `{ message, history }` → `{ reply, model, source }` (JSON) or SSE tokens when `Accept` includes `text/event-stream`
 - `/chat` is rate-limited per client IP (30 requests / minute)
+- Optional `DOOMSY_API_KEY` Worker secret: when set, `/chat` requires header `X-Doomsy-Key`. When unset, `/chat` stays public.
+
+```bash
+npx wrangler secret put DOOMSY_API_KEY
+```
 
 ## Wire Android
 
 Build the app with the Worker URL:
 
 ```bash
-./gradlew :app:assembleDebug -PdoomsyApiBaseUrl=https://doomsy-chat.<your-subdomain>.workers.dev
+./gradlew :app:assembleDebug \
+  -PdoomsyApiBaseUrl=https://doomsy-chat.<your-subdomain>.workers.dev \
+  -PdoomsyApiKey=<same-secret-as-worker>
 ```
 
-If the property is omitted, the app falls back to offline Doomsy replies.
+If the URL property is omitted, the app falls back to offline Doomsy replies. If the key is omitted and the Worker secret is unset, `/chat` remains unauthenticated.

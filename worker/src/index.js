@@ -1,9 +1,10 @@
 import { DOOMSY_SYSTEM_PROMPT } from "./prompt.js";
+import { API_KEY_HEADER, isAuthorized, wantsStream } from "./security.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": `Content-Type, Accept, ${API_KEY_HEADER}`,
 };
 
 const MAX_BODY_BYTES = 32_768;
@@ -26,6 +27,7 @@ export default {
         ok: true,
         service: "doomsy-chat",
         model: env.DOOMSY_MODEL,
+        auth: env.DOOMSY_API_KEY ? "required" : "optional",
       });
     }
 
@@ -35,6 +37,10 @@ export default {
 
     if (request.method !== "POST") {
       return json({ error: "method_not_allowed" }, 405);
+    }
+
+    if (!isAuthorized(request, env.DOOMSY_API_KEY)) {
+      return json({ error: "unauthorized" }, 401);
     }
 
     const clientIp = request.headers.get("CF-Connecting-IP") || "unknown";
@@ -67,7 +73,28 @@ export default {
       { role: "user", content: message.slice(0, 2000) },
     ];
 
+    const stream = wantsStream(request.headers.get("Accept"));
+
     try {
+      if (stream) {
+        const aiStream = await env.AI.run(env.DOOMSY_MODEL, {
+          messages,
+          max_tokens: 160,
+          temperature: 0.65,
+          top_p: 0.9,
+          stream: true,
+        });
+
+        return new Response(aiStream, {
+          status: 200,
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            ...corsHeaders,
+          },
+        });
+      }
+
       const result = await env.AI.run(env.DOOMSY_MODEL, {
         messages,
         max_tokens: 160,

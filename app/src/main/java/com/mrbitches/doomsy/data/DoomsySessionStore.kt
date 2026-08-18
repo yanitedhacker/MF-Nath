@@ -13,6 +13,12 @@ class DoomsySessionStore(context: Context) {
         prefs.edit().putBoolean(KEY_INTRO_SEEN, true).apply()
     }
 
+    fun isTtsMuted(): Boolean = prefs.getBoolean(KEY_TTS_MUTED, false)
+
+    fun setTtsMuted(muted: Boolean) {
+        prefs.edit().putBoolean(KEY_TTS_MUTED, muted).apply()
+    }
+
     fun loadMessages(): List<Message> =
         DoomsySessionCodec.decodeMessages(prefs.getString(KEY_MESSAGES, "").orEmpty())
 
@@ -31,10 +37,18 @@ class DoomsySessionStore(context: Context) {
             .apply()
     }
 
+    fun clearConversation() {
+        prefs.edit()
+            .remove(KEY_MESSAGES)
+            .remove(KEY_HISTORY)
+            .apply()
+    }
+
     companion object {
-        private const val PREFS_NAME = "doomsy_session"
+        const val PREFS_NAME = "doomsy_session"
         private const val KEY_INTRO_SEEN = "intro_seen"
         private const val KEY_MESSAGES = "messages"
         private const val KEY_HISTORY = "history"
+        private const val KEY_TTS_MUTED = "tts_muted"
     }
 }

@@ -17,6 +17,7 @@ data class DoomsyCloudReply(
 
 class DoomsyCloudClient(
     private val baseUrl: String = BuildConfig.DOOMSY_API_BASE_URL,
+    private val apiKey: String = BuildConfig.DOOMSY_API_KEY,
 ) {
 
     fun isConfigured(): Boolean = baseUrl.isNotBlank()
@@ -30,6 +31,7 @@ class DoomsyCloudClient(
             readTimeout = 5_000
             setRequestProperty("Accept", "application/json")
             setRequestProperty("User-Agent", "Doomsy/${BuildConfig.VERSION_NAME}")
+            applyApiKey()
         }
 
         return try {
@@ -46,6 +48,15 @@ class DoomsyCloudClient(
         userMessage: String,
         history: List<Exchange>,
     ): DoomsyCloudReply {
+        return streamMessage(userMessage, history, onToken = {})
+    }
+
+    @Throws(IOException::class)
+    fun streamMessage(
+        userMessage: String,
+        history: List<Exchange>,
+        onToken: (String) -> Unit,
+    ): DoomsyCloudReply {
         if (!isConfigured()) {
             throw IOException("Cloud endpoint is not configured")
         }
@@ -55,9 +66,11 @@ class DoomsyCloudClient(
             connectTimeout = 10_000
             readTimeout = 45_000
             doOutput = true
+            setUseCaches(false)
             setRequestProperty("Content-Type", "application/json; charset=utf-8")
-            setRequestProperty("Accept", "application/json")
+            setRequestProperty("Accept", "text/event-stream, application/json")
             setRequestProperty("User-Agent", "Doomsy/${BuildConfig.VERSION_NAME}")
+            applyApiKey()
         }
 
         val payload = JSONObject()
@@ -78,32 +91,82 @@ class DoomsyCloudClient(
             }
 
             val status = connection.responseCode
-            val body = (if (status in 200..299) connection.inputStream else connection.errorStream)
-                ?.bufferedReader(StandardCharsets.UTF_8)
-                ?.use { it.readText() }
-                .orEmpty()
-
+            val contentType = connection.contentType.orEmpty().lowercase()
             if (status !in 200..299) {
+                val body = readBody(connection, successful = false)
                 throw IOException("Cloud chat failed ($status): $body")
             }
 
-            val json = JSONObject(body)
-            val reply = json.optString("reply").trim()
-            if (reply.isBlank()) {
-                throw IOException("Cloud chat returned an empty reply")
+            return if (contentType.contains("text/event-stream")) {
+                readSseReply(connection, onToken)
+            } else {
+                readJsonReply(connection, onToken)
             }
-
-            return DoomsyCloudReply(
-                text = reply,
-                model = json.optString("model").ifBlank { null },
-                source = json.optString("source").ifBlank { null },
-            )
         } finally {
             connection.disconnect()
         }
     }
 
+    private fun HttpURLConnection.applyApiKey() {
+        if (apiKey.isNotBlank()) {
+            setRequestProperty(API_KEY_HEADER, apiKey)
+        }
+    }
+
+    private fun readSseReply(
+        connection: HttpURLConnection,
+        onToken: (String) -> Unit,
+    ): DoomsyCloudReply {
+        val assembled = StringBuilder()
+        connection.inputStream.bufferedReader(StandardCharsets.UTF_8).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                val token = DoomsySseParser.tokenFromSseLine(line) ?: continue
+                assembled.append(token)
+                onToken(token)
+            }
+        }
+
+        val reply = assembled.toString().trim()
+        if (reply.isBlank()) {
+            throw IOException("Cloud chat stream returned an empty reply")
+        }
+        return DoomsyCloudReply(
+            text = reply,
+            model = null,
+            source = "cloudflare-workers-ai",
+        )
+    }
+
+    private fun readJsonReply(
+        connection: HttpURLConnection,
+        onToken: (String) -> Unit,
+    ): DoomsyCloudReply {
+        val body = readBody(connection, successful = true)
+        val json = JSONObject(body)
+        val reply = json.optString("reply").trim()
+        if (reply.isBlank()) {
+            throw IOException("Cloud chat returned an empty reply")
+        }
+        onToken(reply)
+        return DoomsyCloudReply(
+            text = reply,
+            model = json.optString("model").ifBlank { null },
+            source = json.optString("source").ifBlank { null },
+        )
+    }
+
+    private fun readBody(connection: HttpURLConnection, successful: Boolean): String {
+        val stream = if (successful) connection.inputStream else connection.errorStream
+        return stream
+            ?.bufferedReader(StandardCharsets.UTF_8)
+            ?.use { it.readText() }
+            .orEmpty()
+    }
+
     companion object {
+        const val API_KEY_HEADER = "X-Doomsy-Key"
+
         fun chatEndpoint(baseUrl: String): String {
             val trimmed = baseUrl.trim().trimEnd('/')
             return if (trimmed.endsWith("/chat")) trimmed else "$trimmed/chat"
