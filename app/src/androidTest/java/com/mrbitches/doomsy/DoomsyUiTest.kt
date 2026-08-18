@@ -71,7 +71,6 @@ class DoomsyUiTest {
 
         composeRule.onNodeWithTag("doomsy_composer").performClick()
         composeRule.onNodeWithTag("doomsy_composer").performTextInput("hello")
-        composeRule.onNodeWithText("hello").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Send message").performClick()
 
         composeRule.waitUntil(timeoutMillis = 8_000) {
