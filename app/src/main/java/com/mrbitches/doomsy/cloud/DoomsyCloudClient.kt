@@ -21,6 +21,26 @@ class DoomsyCloudClient(
 
     fun isConfigured(): Boolean = baseUrl.isNotBlank()
 
+    fun probeHealth(): Boolean {
+        if (!isConfigured()) return false
+
+        val connection = (URL(healthEndpoint(baseUrl)).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 5_000
+            readTimeout = 5_000
+            setRequestProperty("Accept", "application/json")
+            setRequestProperty("User-Agent", "Doomsy/${BuildConfig.VERSION_NAME}")
+        }
+
+        return try {
+            connection.responseCode in 200..299
+        } catch (_: Exception) {
+            false
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     @Throws(IOException::class)
     fun sendMessage(
         userMessage: String,
@@ -30,8 +50,7 @@ class DoomsyCloudClient(
             throw IOException("Cloud endpoint is not configured")
         }
 
-        val endpoint = if (baseUrl.endsWith("/chat")) baseUrl else "${baseUrl.trimEnd('/')}/chat"
-        val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
+        val connection = (URL(chatEndpoint(baseUrl)).openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 10_000
             readTimeout = 45_000
@@ -81,6 +100,19 @@ class DoomsyCloudClient(
             )
         } finally {
             connection.disconnect()
+        }
+    }
+
+    companion object {
+        fun chatEndpoint(baseUrl: String): String {
+            val trimmed = baseUrl.trim().trimEnd('/')
+            return if (trimmed.endsWith("/chat")) trimmed else "$trimmed/chat"
+        }
+
+        fun healthEndpoint(baseUrl: String): String {
+            val trimmed = baseUrl.trim().trimEnd('/')
+            val origin = if (trimmed.endsWith("/chat")) trimmed.removeSuffix("/chat") else trimmed
+            return "${origin.trimEnd('/')}/health"
         }
     }
 }

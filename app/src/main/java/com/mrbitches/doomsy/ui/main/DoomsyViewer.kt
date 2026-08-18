@@ -16,6 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import com.mrbitches.doomsy.util.Haptic
 import io.github.sceneview.Scene
 import dev.romainguy.kotlin.math.Float3
@@ -80,7 +83,15 @@ fun DoomsyViewer(
         label = "xOffset",
     )
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.semantics {
+            contentDescription = "Doomsy mask. Double tap for a quip."
+            onClick {
+                onTap()
+                true
+            }
+        },
+    ) {
         Scene(
             modifier = Modifier
                 .fillMaxSize()

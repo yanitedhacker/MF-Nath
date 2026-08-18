@@ -10,11 +10,11 @@ This repository is meant to be forked, themed, and self-hosted—swap assets, pr
 
 | Area | What it does |
 |------|----------------|
-| **UI** | Jetpack Compose + Material 3, custom palette (high-contrast light base, orange accent), intro → main flow, edge-to-edge layout. |
-| **3D** | [SceneView](https://github.com/SceneView/sceneview-android) loads `assets/models/doomsy.glb` with idle motion, tap/long-press, and gesture-friendly scaling. |
-| **Chat** | Message stack, composer, optional voice input (`RECORD_AUDIO`), typewriter-style assistant bubbles when generating. |
+| **UI** | Jetpack Compose + Material 3, custom palette (high-contrast light base, orange accent), intro → main flow (tap to skip; remembered after first run), edge-to-edge layout. |
+| **3D** | [SceneView](https://github.com/SceneView/sceneview-android) loads `assets/models/doomsy.glb` with idle motion, tap/long-press quips, and gesture-friendly scaling. |
+| **Chat** | Scrollable message stack, composer with keyboard Send, optional voice input (`RECORD_AUDIO`), typewriter-style assistant bubbles when generating. Last messages persist across launches. |
 | **Tracks** | Curated pool of tracks (multiple artists); horizontal carousel; each card opens `spotify:track:…` via `Intent`. **Shuffle refreshes** each time the tracks panel is opened. |
-| **Cloud (optional)** | HTTP `POST` to a Cloudflare Worker at `/chat`; Worker runs **Workers AI** with a server-side system prompt. If no base URL is configured, the app uses **local fallback** copy (no network LLM). |
+| **Cloud (optional)** | HTTP `POST` to a Cloudflare Worker at `/chat`; Worker runs **Workers AI** with a server-side system prompt. App probes `GET /health` on launch. If no base URL is configured, the app uses **local fallback** copy (no network LLM). |
 
 ---
 
@@ -45,7 +45,8 @@ This repository is meant to be forked, themed, and self-hosted—swap assets, pr
 ```
 
 - **Build-time URL**: `DOOMSY_API_BASE_URL` is injected via `BuildConfig` from Gradle / `local.properties` (see below).
-- **History**: Last few exchanges are sent to the Worker for short conversational context (see `DoomsyCloudClient` for limits).
+- **Health**: On launch, the app `GET`s `/health` so the status chip can show live vs. fallback before the first message.
+- **History**: Last few exchanges are stored on device and sent to the Worker for short conversational context (see `DoomsyCloudClient` for limits).
 
 ---
 
@@ -138,7 +139,9 @@ Configure **Workers AI** and the model string in `wrangler.jsonc` (`vars.DOOMSY_
 ./gradlew :app:testDebugUnitTest
 ```
 
-Unit tests cover data helpers (tracks, intents, conversation pieces, etc.). Adjust package names and URIs if you fork the project.
+Unit tests cover data helpers (tracks, intents, conversation pieces, session codec, cloud URLs, etc.). A GitHub Actions workflow runs the same Android unit tests plus a Worker syntax check on push/PR.
+
+Adjust package names and URIs if you fork the project.
 
 ---
 
@@ -149,6 +152,7 @@ Unit tests cover data helpers (tracks, intents, conversation pieces, etc.). Adju
 - Edit **`DoomTracks.kt`** for artists, albums, and `spotify:track:` IDs (verify on device).
 - Edit **`worker/src/prompt.js`** for persona and safety boundaries.
 - Tune **`worker/wrangler.jsonc`** model id and token limits in `worker/src/index.js` if your use case needs longer replies.
+- The Worker also exposes **`GET /health`** (and `GET /`) for reachability checks, with a simple per-IP rate limit on `/chat`.
 - Theme colors live under `app/.../ui/theme/`.
 
 ---

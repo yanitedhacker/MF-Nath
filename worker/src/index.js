@@ -2,9 +2,14 @@ import { DOOMSY_SYSTEM_PROMPT } from "./prompt.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
+
+const MAX_BODY_BYTES = 32_768;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 30;
+const rateBuckets = new Map();
 
 export default {
   async fetch(request, env) {
@@ -13,12 +18,33 @@ export default {
     }
 
     const url = new URL(request.url);
+    if (url.pathname === "/" || url.pathname === "/health") {
+      if (request.method !== "GET") {
+        return json({ error: "method_not_allowed" }, 405);
+      }
+      return json({
+        ok: true,
+        service: "doomsy-chat",
+        model: env.DOOMSY_MODEL,
+      });
+    }
+
     if (url.pathname !== "/chat") {
       return json({ error: "not_found" }, 404);
     }
 
     if (request.method !== "POST") {
       return json({ error: "method_not_allowed" }, 405);
+    }
+
+    const clientIp = request.headers.get("CF-Connecting-IP") || "unknown";
+    if (isRateLimited(clientIp)) {
+      return json({ error: "rate_limited" }, 429);
+    }
+
+    const contentLength = Number(request.headers.get("Content-Length") || "0");
+    if (contentLength > MAX_BODY_BYTES) {
+      return json({ error: "payload_too_large" }, 413);
     }
 
     let body;
@@ -77,6 +103,26 @@ export default {
     }
   },
 };
+
+function isRateLimited(key) {
+  const now = Date.now();
+  if (rateBuckets.size > 500) {
+    for (const [bucketKey, bucket] of rateBuckets) {
+      if (now > bucket.resetAt) {
+        rateBuckets.delete(bucketKey);
+      }
+    }
+  }
+
+  const existing = rateBuckets.get(key);
+  if (!existing || now > existing.resetAt) {
+    rateBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  existing.count += 1;
+  return existing.count > RATE_LIMIT_MAX;
+}
 
 function toCloudflareHistory(history) {
   return history

@@ -1,6 +1,5 @@
 package com.mrbitches.doomsy.data
 
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -26,5 +25,15 @@ class DoomsyQuipsTest {
                 DoomsyQuips.allQuips.contains(quip),
             )
         }
+    }
+
+    @Test
+    fun `deep quip pool is non-empty and distinct from tap quips`() {
+        assertTrue(DoomsyQuips.deepQuips.isNotEmpty())
+        DoomsyQuips.deepQuips.forEach { quip ->
+            assertTrue(quip.isNotBlank())
+        }
+        val deep = DoomsyQuips.randomDeep()
+        assertTrue(DoomsyQuips.deepQuips.contains(deep))
     }
 }

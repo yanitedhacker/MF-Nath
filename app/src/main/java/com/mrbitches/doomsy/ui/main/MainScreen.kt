@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -21,13 +20,11 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,11 +33,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mrbitches.doomsy.ui.chat.ChatComposer
 import com.mrbitches.doomsy.ui.chat.ChatMessageStack
@@ -60,11 +60,11 @@ import com.mrbitches.doomsy.ui.theme.StormInk
 
 @Composable
 fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
-    val messages by viewModel.messages.collectAsState()
-    val isGenerating by viewModel.isGenerating.collectAsState()
-    val isCloudConfigured by viewModel.isCloudConfigured.collectAsState()
-    val isCloudReachable by viewModel.isCloudReachable.collectAsState()
-    val currentQuip by viewModel.currentQuip.collectAsState()
+    val messages by viewModel.messages.collectAsStateWithLifecycle()
+    val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
+    val isCloudConfigured by viewModel.isCloudConfigured.collectAsStateWithLifecycle()
+    val isCloudReachable by viewModel.isCloudReachable.collectAsStateWithLifecycle()
+    val currentQuip by viewModel.currentQuip.collectAsStateWithLifecycle()
     var isMusicExpanded by rememberSaveable { mutableStateOf(false) }
     var trackShuffleKey by remember { mutableIntStateOf(0) }
     val toggleMusicTray = {
@@ -82,7 +82,7 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
         DoomsyViewer(
             modifier = Modifier.fillMaxSize(),
             onTap = { viewModel.triggerQuip() },
-            onLongPress = {},
+            onLongPress = { viewModel.triggerDeepQuip() },
             scaleToUnits = 0.72f,
             verticalOffset = 0.03f,
             horizontalOffset = -0.14f,
@@ -120,6 +120,11 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
                 UtilityPill(
                     text = if (isMusicExpanded) "Hide ^" else "Tracks v",
                     onClick = toggleMusicTray,
+                    contentDescription = if (isMusicExpanded) {
+                        "Hide track carousel"
+                    } else {
+                        "Show shuffled tracks"
+                    },
                 )
             }
 
@@ -226,6 +231,7 @@ private fun StatusCluster(
             .clip(shape)
             .background(GlassStark)
             .border(1.dp, FrostBorder, shape)
+            .semantics { contentDescription = statusText }
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -260,12 +266,14 @@ private fun StatusCluster(
 private fun UtilityPill(
     text: String,
     onClick: () -> Unit,
+    contentDescription: String = text,
 ) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(18.dp))
             .background(GlassStark)
             .border(1.dp, SoftOrangeBorder, RoundedCornerShape(18.dp))
+            .semantics { this.contentDescription = contentDescription }
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
@@ -323,6 +331,11 @@ private fun MusicTray(
             UtilityPill(
                 text = if (expanded) "^" else "v",
                 onClick = onToggle,
+                contentDescription = if (expanded) {
+                    "Collapse track carousel"
+                } else {
+                    "Expand track carousel"
+                },
             )
         }
 

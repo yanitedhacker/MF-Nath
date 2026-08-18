@@ -4,10 +4,14 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,17 +25,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.AshGrey
-import com.mrbitches.doomsy.ui.theme.VillainOrangeDim
-import com.mrbitches.doomsy.ui.theme.VillainOrangeSubtle
+import com.mrbitches.doomsy.ui.theme.DeepBlack
+import com.mrbitches.doomsy.ui.theme.MadvillainSilver
 import com.mrbitches.doomsy.ui.theme.StarkGrey
 import com.mrbitches.doomsy.ui.theme.StarkWhite
-import com.mrbitches.doomsy.ui.theme.MadvillainSilver
+import com.mrbitches.doomsy.ui.theme.VillainOrangeDim
+import com.mrbitches.doomsy.ui.theme.VillainOrangeSubtle
 import com.mrbitches.doomsy.util.Anim
+import com.mrbitches.doomsy.util.Haptic
 import kotlinx.coroutines.delay
 
 private val introSlides = listOf(
@@ -45,8 +53,20 @@ private val introSlides = listOf(
 fun IntroScreen(onIntroComplete: () -> Unit) {
     var slideIndex by remember { mutableIntStateOf(0) }
     val screenAlpha = remember { Animatable(1f) }
+    val context = LocalContext.current
+    val accessibilityManager = remember(context) {
+        context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE)
+            as? android.view.accessibility.AccessibilityManager
+    }
+    val reduceMotion = accessibilityManager?.isTouchExplorationEnabled == true
 
     LaunchedEffect(Unit) {
+        Haptic.introRumble(context)
+        if (reduceMotion) {
+            delay(400)
+            onIntroComplete()
+            return@LaunchedEffect
+        }
         while (slideIndex < introSlides.lastIndex) {
             delay(Anim.INTRO_SLIDE_HOLD)
             slideIndex++
@@ -64,7 +84,15 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
                     colors = listOf(StarkWhite, StarkGrey, AshGrey),
                 ),
             )
-            .alpha(screenAlpha.value),
+            .alpha(screenAlpha.value)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onIntroComplete,
+            )
+            .semantics {
+                contentDescription = "Doomsy intro. Double tap to skip."
+            },
     ) {
         Box(
             modifier = Modifier
@@ -126,7 +154,19 @@ fun IntroScreen(onIntroComplete: () -> Unit) {
             ),
             modifier = Modifier
                 .align(Alignment.TopCenter)
+                .statusBarsPadding()
                 .padding(top = 52.dp),
+        )
+
+        Text(
+            text = "Tap to enter",
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = MadvillainSilver,
+            ),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 36.dp),
         )
     }
 }
