@@ -3,7 +3,6 @@ package com.mrbitches.doomsy
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -14,6 +13,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.mrbitches.doomsy.data.DoomTracks
 import com.mrbitches.doomsy.data.DoomsySessionStore
+import com.mrbitches.doomsy.util.DeviceGraphics
+import com.mrbitches.doomsy.util.GraphicsProfile
 import com.mrbitches.doomsy.util.SpotifyIntent
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -32,7 +33,12 @@ class ClearDoomsySessionRule : TestRule {
                     .edit()
                     .clear()
                     .commit()
-                base.evaluate()
+                DeviceGraphics.profileOverride = GraphicsProfile.Low
+                try {
+                    base.evaluate()
+                } finally {
+                    DeviceGraphics.profileOverride = null
+                }
             }
         }
     }

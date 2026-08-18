@@ -20,6 +20,13 @@ object DeviceGraphics {
     const val LOW_MEMORY_CLASS_MB = 128
     const val MEDIUM_MEMORY_CLASS_MB = 192
 
+    /**
+     * Test hook: skip SceneView idle animations so Compose UI tests can reach idle.
+     * Null means use the real device profile.
+     */
+    @Volatile
+    var profileOverride: GraphicsProfile? = null
+
     fun profile(isLowRamDevice: Boolean, memoryClassMb: Int): GraphicsProfile {
         if (isLowRamDevice || memoryClassMb < LOW_MEMORY_CLASS_MB) {
             return GraphicsProfile.Low
@@ -31,6 +38,7 @@ object DeviceGraphics {
     }
 
     fun profile(context: Context): GraphicsProfile {
+        profileOverride?.let { return it }
         val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         return profile(manager.isLowRamDevice, manager.memoryClass)
     }
