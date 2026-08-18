@@ -59,7 +59,7 @@ class DoomsyUiTest {
     }
 
     @Test
-    fun composerSendShowsFallbackReply() {
+    fun composerSendShowsReply() {
         skipIntro()
 
         composeRule.onNodeWithContentDescription("Message Doomsy").performTextInput("hello")
@@ -71,10 +71,11 @@ class DoomsyUiTest {
                 .isNotEmpty()
         }
         composeRule.onNodeWithText("hello").assertIsDisplayed()
-        composeRule.waitUntil(timeoutMillis = 8_000) {
-            composeRule.onAllNodes(hasText("Doomsy nods once from behind the metal", substring = true))
+        // Cloud SSE or local fallback both append a second assistant bubble.
+        composeRule.waitUntil(timeoutMillis = 45_000) {
+            composeRule.onAllNodes(hasContentDescription("Doomsy message"))
                 .fetchSemanticsNodes()
-                .isNotEmpty()
+                .size >= 2
         }
     }
 
