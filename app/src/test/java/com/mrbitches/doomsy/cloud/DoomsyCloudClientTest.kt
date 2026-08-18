@@ -36,4 +36,9 @@ class DoomsyCloudClientTest {
             DoomsyCloudClient.healthEndpoint("https://doomsy-chat.example.workers.dev/chat"),
         )
     }
+
+    @Test
+    fun `api key header name matches the Worker`() {
+        assertEquals("X-Doomsy-Key", DoomsyCloudClient.API_KEY_HEADER)
+    }
 }

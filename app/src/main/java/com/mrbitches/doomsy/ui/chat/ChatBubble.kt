@@ -10,15 +10,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.Message
 import com.mrbitches.doomsy.ui.theme.DeepBlack
@@ -27,11 +23,9 @@ import com.mrbitches.doomsy.ui.theme.GlassStark
 import com.mrbitches.doomsy.ui.theme.GlassSmoke
 import com.mrbitches.doomsy.ui.theme.OffWhite
 import com.mrbitches.doomsy.ui.theme.SoftOrangeBorder
-import com.mrbitches.doomsy.util.Anim
-import kotlinx.coroutines.delay
 
 @Composable
-fun ChatBubble(message: Message, animate: Boolean = false) {
+fun ChatBubble(message: Message) {
     val isUser = message.isUser
 
     val shape = RoundedCornerShape(
@@ -40,28 +34,6 @@ fun ChatBubble(message: Message, animate: Boolean = false) {
         bottomStart = if (isUser) 22.dp else 10.dp,
         bottomEnd = if (isUser) 10.dp else 22.dp,
     )
-
-    val reduceMotion = LocalContext.current.let { context ->
-        val manager = context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE)
-            as? android.view.accessibility.AccessibilityManager
-        manager?.isTouchExplorationEnabled == true
-    }
-    var visibleChars by remember(message.text, animate, reduceMotion) {
-        mutableIntStateOf(if (animate && !reduceMotion) 0 else message.text.length)
-    }
-
-    val shouldAnimate = animate && !reduceMotion && visibleChars < message.text.length
-
-    if (shouldAnimate) {
-        LaunchedEffect(message.text) {
-            while (visibleChars < message.text.length) {
-                delay(Anim.TYPEWRITER_CHAR_DELAY)
-                visibleChars++
-            }
-        }
-    }
-
-    val displayText = message.text.take(visibleChars)
 
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -80,10 +52,13 @@ fun ChatBubble(message: Message, animate: Boolean = false) {
                     color = if (isUser) FrostBorder else SoftOrangeBorder,
                     shape = shape,
                 )
+                .semantics {
+                    contentDescription = if (isUser) "Your message" else "Doomsy message"
+                }
                 .padding(horizontal = 15.dp, vertical = 11.dp),
         ) {
             Text(
-                text = displayText,
+                text = message.text,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = if (isUser) OffWhite else DeepBlack,
                 ),

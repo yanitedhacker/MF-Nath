@@ -1,5 +1,6 @@
 package com.mrbitches.doomsy.ui.main
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -10,9 +11,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -22,8 +25,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,10 +43,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mrbitches.doomsy.data.Message
 import com.mrbitches.doomsy.ui.chat.ChatComposer
 import com.mrbitches.doomsy.ui.chat.ChatMessageStack
 import com.mrbitches.doomsy.ui.chat.ChatSignalChip
@@ -65,8 +72,11 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
     val isCloudConfigured by viewModel.isCloudConfigured.collectAsStateWithLifecycle()
     val isCloudReachable by viewModel.isCloudReachable.collectAsStateWithLifecycle()
     val currentQuip by viewModel.currentQuip.collectAsStateWithLifecycle()
+    val isTtsMuted by viewModel.isTtsMuted.collectAsStateWithLifecycle()
     var isMusicExpanded by rememberSaveable { mutableStateOf(false) }
     var trackShuffleKey by remember { mutableIntStateOf(0) }
+    var showClearConfirm by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
     val toggleMusicTray = {
         if (!isMusicExpanded) trackShuffleKey++
         isMusicExpanded = !isMusicExpanded
@@ -79,100 +89,278 @@ fun MainScreen(viewModel: DoomsyViewModel = viewModel()) {
     ) {
         AtmosphericBackdrop()
 
-        DoomsyViewer(
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .imePadding(),
+        ) {
+            val twoPane = shouldUseTwoPane(maxWidth.value.toInt(), maxHeight.value.toInt())
+
+            if (twoPane) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .semantics { contentDescription = "Doomsy two-pane layout" }
+                        .padding(horizontal = 24.dp, vertical = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    MaskPane(
+                        currentQuip = currentQuip,
+                        overlayQuip = false,
+                        onTap = { viewModel.triggerQuip() },
+                        onLongPress = { viewModel.triggerDeepQuip() },
+                        onDismissQuip = { viewModel.dismissQuip() },
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+
+                    ChatPane(
+                        messages = messages,
+                        isGenerating = isGenerating,
+                        isCloudConfigured = isCloudConfigured,
+                        isCloudReachable = isCloudReachable,
+                        isTtsMuted = isTtsMuted,
+                        isMusicExpanded = isMusicExpanded,
+                        trackShuffleKey = trackShuffleKey,
+                        compactChat = false,
+                        onToggleMute = { viewModel.setTtsMuted(!isTtsMuted) },
+                        onExport = { shareChat(context, viewModel.exportChatText()) },
+                        onClear = { showClearConfirm = true },
+                        onToggleMusic = toggleMusicTray,
+                        onSend = { viewModel.sendMessage(it) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .semantics { contentDescription = "Doomsy phone layout" },
+                ) {
+                    MaskPane(
+                        currentQuip = currentQuip,
+                        overlayQuip = true,
+                        onTap = { viewModel.triggerQuip() },
+                        onLongPress = { viewModel.triggerDeepQuip() },
+                        onDismissQuip = { viewModel.dismissQuip() },
+                        modifier = Modifier.fillMaxSize(),
+                    )
+
+                    ChatPane(
+                        messages = messages,
+                        isGenerating = isGenerating,
+                        isCloudConfigured = isCloudConfigured,
+                        isCloudReachable = isCloudReachable,
+                        isTtsMuted = isTtsMuted,
+                        isMusicExpanded = isMusicExpanded,
+                        trackShuffleKey = trackShuffleKey,
+                        compactChat = true,
+                        onToggleMute = { viewModel.setTtsMuted(!isTtsMuted) },
+                        onExport = { shareChat(context, viewModel.exportChatText()) },
+                        onClear = { showClearConfirm = true },
+                        onToggleMusic = toggleMusicTray,
+                        onSend = { viewModel.sendMessage(it) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 24.dp, vertical = 24.dp),
+                    )
+                }
+            }
+        }
+
+        if (showClearConfirm) {
+            AlertDialog(
+                onDismissRequest = { showClearConfirm = false },
+                title = { Text("Clear chat?") },
+                text = { Text("This wipes the saved conversation on this device.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.clearChat()
+                            showClearConfirm = false
+                        },
+                    ) {
+                        Text("Clear")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showClearConfirm = false }) {
+                        Text("Keep")
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun MaskPane(
+    currentQuip: String?,
+    overlayQuip: Boolean,
+    onTap: () -> Unit,
+    onLongPress: () -> Unit,
+    onDismissQuip: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        DoomsyHero(
             modifier = Modifier.fillMaxSize(),
-            onTap = { viewModel.triggerQuip() },
-            onLongPress = { viewModel.triggerDeepQuip() },
+            onTap = onTap,
+            onLongPress = onLongPress,
             scaleToUnits = 0.72f,
             verticalOffset = 0.03f,
-            horizontalOffset = -0.14f,
+            horizontalOffset = if (overlayQuip) -0.14f else 0f,
             idleRotationSpan = 3.6f,
         )
 
         QuipOverlay(
             quip = currentQuip,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 92.dp, top = 72.dp),
-            onDismissed = { viewModel.dismissQuip() },
+            modifier = if (overlayQuip) {
+                Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 92.dp, top = 72.dp)
+            } else {
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+            },
+            onDismissed = onDismissQuip,
         )
+    }
+}
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .imePadding()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
+@Composable
+private fun ChatPane(
+    messages: List<Message>,
+    isGenerating: Boolean,
+    isCloudConfigured: Boolean,
+    isCloudReachable: Boolean,
+    isTtsMuted: Boolean,
+    isMusicExpanded: Boolean,
+    trackShuffleKey: Int,
+    compactChat: Boolean,
+    onToggleMute: () -> Unit,
+    onExport: () -> Unit,
+    onClear: () -> Unit,
+    onToggleMusic: () -> Unit,
+    onSend: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
-            ) {
-                StatusCluster(
-                    isGenerating = isGenerating,
-                    isCloudConfigured = isCloudConfigured,
-                    isCloudReachable = isCloudReachable,
-                )
-
-                UtilityPill(
-                    text = if (isMusicExpanded) "Hide ^" else "Tracks v",
-                    onClick = toggleMusicTray,
-                    contentDescription = if (isMusicExpanded) {
-                        "Hide track carousel"
-                    } else {
-                        "Show shuffled tracks"
-                    },
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(0.66f),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    val signalText = when {
-                        !isCloudConfigured -> "Off-grid mode. Doomsy speaks from the vault."
-                        !isCloudReachable && messages.size > 1 -> "Signal unstable. Doomsy still answers through the static."
-                        else -> null
-                    }
-
-                    signalText?.let { text ->
-                        ChatSignalChip(text = text)
-                    }
-
-                    ChatMessageStack(
-                        messages = messages,
-                        isGenerating = isGenerating,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.size(12.dp))
-
-            MusicTray(
-                expanded = isMusicExpanded,
-                trackShuffleKey = trackShuffleKey,
-                onToggle = toggleMusicTray,
+            StatusCluster(
+                isGenerating = isGenerating,
+                isCloudConfigured = isCloudConfigured,
+                isCloudReachable = isCloudReachable,
             )
 
-            Spacer(modifier = Modifier.size(12.dp))
-
-            ChatComposer(
-                onSend = { viewModel.sendMessage(it) },
-                enabled = !isGenerating,
-                modifier = Modifier.fillMaxWidth(),
+            UtilityPill(
+                text = if (isMusicExpanded) "Hide ^" else "Tracks v",
+                onClick = onToggleMusic,
+                contentDescription = if (isMusicExpanded) {
+                    "Hide track carousel"
+                } else {
+                    "Show shuffled tracks"
+                },
             )
         }
+
+        Spacer(modifier = Modifier.size(10.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+        ) {
+            UtilityPill(
+                text = if (isTtsMuted) "Muted" else "Speak",
+                onClick = onToggleMute,
+                contentDescription = if (isTtsMuted) {
+                    "Unmute Doomsy voice"
+                } else {
+                    "Mute Doomsy voice"
+                },
+            )
+            UtilityPill(
+                text = "Export",
+                onClick = onExport,
+                contentDescription = "Export chat",
+            )
+            UtilityPill(
+                text = "Clear",
+                onClick = onClear,
+                contentDescription = "Clear chat",
+            )
+        }
+
+        if (compactChat) {
+            Spacer(modifier = Modifier.weight(1f))
+        } else {
+            Spacer(modifier = Modifier.size(12.dp))
+        }
+
+        Column(
+            modifier = if (compactChat) {
+                Modifier.fillMaxWidth(0.66f).align(Alignment.End)
+            } else {
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            },
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            val signalText = when {
+                !isCloudConfigured -> "Off-grid mode. Doomsy speaks from the vault."
+                !isCloudReachable && messages.size > 1 -> "Signal unstable. Doomsy still answers through the static."
+                else -> null
+            }
+
+            signalText?.let { text ->
+                ChatSignalChip(text = text)
+            }
+
+            ChatMessageStack(
+                messages = messages,
+                isGenerating = isGenerating,
+                compact = compactChat,
+                modifier = if (compactChat) Modifier else Modifier.weight(1f).fillMaxWidth(),
+            )
+        }
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        MusicTray(
+            expanded = isMusicExpanded,
+            trackShuffleKey = trackShuffleKey,
+            onToggle = onToggleMusic,
+        )
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        ChatComposer(
+            onSend = onSend,
+            enabled = !isGenerating,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
+}
+
+private fun shareChat(context: android.content.Context, text: String) {
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+        putExtra(Intent.EXTRA_SUBJECT, "Doomsy chat")
+    }
+    context.startActivity(Intent.createChooser(intent, "Export chat"))
 }
 
 @Composable
@@ -201,8 +389,6 @@ private fun AtmosphericBackdrop() {
                     ),
                 ),
         )
-        
-        // Remove the vertical gradient overlay that was washing out the bottom
     }
 }
 

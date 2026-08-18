@@ -25,6 +25,4 @@ object Anim {
 
     const val QUIP_DISPLAY_DURATION = 3000L
     const val QUIP_FADE_DURATION = 400L
-
-    const val TYPEWRITER_CHAR_DELAY = 30L
 }

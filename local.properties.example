@@ -1,0 +1,11 @@
+## Copy this file to local.properties (gitignored) and fill in values.
+## Android Studio also writes sdk.dir here.
+
+# sdk.dir=/path/to/Android/sdk
+
+## Optional Cloudflare Worker. Leave blank to use offline fallback replies.
+# doomsyApiBaseUrl=https://doomsy-chat.your-subdomain.workers.dev
+
+## Optional shared secret. Must match the Worker secret DOOMSY_API_KEY.
+## The app sends it as header X-Doomsy-Key. Leave blank if the Worker is public.
+# doomsyApiKey=

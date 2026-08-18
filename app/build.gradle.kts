@@ -6,33 +6,37 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-val doomsyApiBaseUrlFromLocal: String =
+fun localProperty(name: String): String =
     rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { stream ->
-        Properties().apply { load(stream) }.getProperty("doomsyApiBaseUrl", "").trim()
+        Properties().apply { load(stream) }.getProperty(name, "").trim()
     }.orEmpty()
+
+fun escapedBuildConfigString(value: String): String =
+    value.replace("\\", "\\\\").replace("\"", "\\\"")
 
 val doomsyApiBaseUrl =
     providers.gradleProperty("doomsyApiBaseUrl").orElse("").map { it.trim() }.get()
-        .ifBlank { doomsyApiBaseUrlFromLocal }
+        .ifBlank { localProperty("doomsyApiBaseUrl") }
 
-val escapedDoomsyApiBaseUrl = doomsyApiBaseUrl
-    .replace("\\", "\\\\")
-    .replace("\"", "\\\"")
+val doomsyApiKey =
+    providers.gradleProperty("doomsyApiKey").orElse("").map { it.trim() }.get()
+        .ifBlank { localProperty("doomsyApiKey") }
 
 android {
     namespace = "com.mrbitches.doomsy"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mrbitches.doomsy"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.0-rc.3"
+        targetSdk = 36
+        versionCode = 5
+        versionName = "1.0.0-rc.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "DOOMSY_API_BASE_URL", "\"$escapedDoomsyApiBaseUrl\"")
+        buildConfigField("String", "DOOMSY_API_BASE_URL", "\"${escapedBuildConfigString(doomsyApiBaseUrl)}\"")
+        buildConfigField("String", "DOOMSY_API_KEY", "\"${escapedBuildConfigString(doomsyApiKey)}\"")
     }
 
     buildTypes {
@@ -91,7 +95,13 @@ dependencies {
     implementation(libs.sceneview)
 
     debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }

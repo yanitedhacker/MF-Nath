@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -59,12 +60,15 @@ fun ChatMessageStack(
     isGenerating: Boolean,
     modifier: Modifier = Modifier,
     maxVisible: Int = 12,
+    compact: Boolean = true,
 ) {
     val visibleMessages = messages.takeLast(maxVisible)
     val listState = rememberLazyListState()
+    val lastAssistantHasText = visibleMessages.lastOrNull()?.let { !it.isUser && it.text.isNotEmpty() } == true
+    val showTyping = isGenerating && !lastAssistantHasText
 
     LaunchedEffect(visibleMessages.size, isGenerating, visibleMessages.lastOrNull()?.text) {
-        val lastIndex = visibleMessages.lastIndex + if (isGenerating) 1 else 0
+        val lastIndex = visibleMessages.lastIndex + if (showTyping) 1 else 0
         if (lastIndex >= 0) {
             listState.animateScrollToItem(lastIndex)
         }
@@ -73,7 +77,7 @@ fun ChatMessageStack(
     LazyColumn(
         modifier = modifier
             .widthIn(max = 320.dp)
-            .heightIn(max = 280.dp)
+            .then(if (compact) Modifier.heightIn(max = 280.dp) else Modifier)
             .semantics { contentDescription = "Chat with Doomsy" },
         state = listState,
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -81,16 +85,13 @@ fun ChatMessageStack(
         contentPadding = PaddingValues(vertical = 4.dp),
     ) {
         itemsIndexed(
-            visibleMessages,
+            visibleMessages.filter { it.text.isNotEmpty() },
             key = { index, message -> "${message.timestamp}-${message.isUser}-$index" },
         ) { _, message ->
-            ChatBubble(
-                message = message,
-                animate = message.animateReveal && !message.isUser && message == messages.lastOrNull(),
-            )
+            ChatBubble(message = message)
         }
 
-        if (isGenerating) {
+        if (showTyping) {
             item(key = "typing") {
                 TypingChip()
             }
@@ -147,6 +148,7 @@ fun ChatComposer(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp, vertical = 8.dp)
+                .testTag("doomsy_composer")
                 .semantics { contentDescription = "Message Doomsy" },
             decorationBox = { innerTextField ->
                 Box {
@@ -171,13 +173,7 @@ fun ChatComposer(
                 .clip(CircleShape)
                 .background(if (canSend) DeepBlack else GlassSmoke)
                 .semantics { contentDescription = "Send message" }
-                .then(
-                    if (canSend) {
-                        Modifier.clickable { submit() }
-                    } else {
-                        Modifier
-                    },
-                ),
+                .clickable(enabled = canSend) { submit() },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
