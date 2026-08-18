@@ -27,8 +27,8 @@ android {
         applicationId = "com.mrbitches.doomsy"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.0-rc.2"
+        versionCode = 4
+        versionName = "1.0.0-rc.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -78,6 +78,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))
@@ -85,9 +86,9 @@ dependencies {
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.core)
     implementation(libs.compose.animation)
     implementation(libs.sceneview)
-    implementation(libs.accompanist.systemuicontroller)
 
     debugImplementation(libs.compose.ui.tooling)
 

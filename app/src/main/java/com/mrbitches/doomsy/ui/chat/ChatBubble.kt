@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.mrbitches.doomsy.data.Message
 import com.mrbitches.doomsy.ui.theme.DeepBlack
@@ -40,11 +41,18 @@ fun ChatBubble(message: Message, animate: Boolean = false) {
         bottomEnd = if (isUser) 10.dp else 22.dp,
     )
 
-    var visibleChars by remember(message.text) {
-        mutableIntStateOf(if (animate) 0 else message.text.length)
+    val reduceMotion = LocalContext.current.let { context ->
+        val manager = context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE)
+            as? android.view.accessibility.AccessibilityManager
+        manager?.isTouchExplorationEnabled == true
+    }
+    var visibleChars by remember(message.text, animate, reduceMotion) {
+        mutableIntStateOf(if (animate && !reduceMotion) 0 else message.text.length)
     }
 
-    if (animate && visibleChars < message.text.length) {
+    val shouldAnimate = animate && !reduceMotion && visibleChars < message.text.length
+
+    if (shouldAnimate) {
         LaunchedEffect(message.text) {
             while (visibleChars < message.text.length) {
                 delay(Anim.TYPEWRITER_CHAR_DELAY)

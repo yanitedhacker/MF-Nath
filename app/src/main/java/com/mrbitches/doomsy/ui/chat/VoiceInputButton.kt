@@ -29,13 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.mrbitches.doomsy.ui.theme.DeepBlack
 import com.mrbitches.doomsy.ui.theme.GlassWhiteBorder
 import com.mrbitches.doomsy.ui.theme.VillainOrange
 import com.mrbitches.doomsy.ui.theme.GunmetalLight
-import com.mrbitches.doomsy.ui.theme.OffWhite
 import java.util.Locale
 
 @Composable
@@ -90,6 +91,13 @@ fun VoiceInputButton(
             .clip(CircleShape)
             .background(bgColor)
             .border(0.5.dp, GlassWhiteBorder, CircleShape)
+            .semantics {
+                contentDescription = if (isListening) {
+                    "Stop listening"
+                } else {
+                    "Voice input"
+                }
+            }
             .clickable {
                 if (speechRecognizer == null) {
                     Toast.makeText(context, "Speech recognition is unavailable on this device.", Toast.LENGTH_SHORT).show()
@@ -116,10 +124,9 @@ fun VoiceInputButton(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = if (isListening) "\u2026" else "mic",
-            style = MaterialTheme.typography.labelSmall.copy(
-                color = if (isListening) DeepBlack else VillainOrange,
-            ),
+            text = if (isListening) "\u2022\u2022\u2022" else "mic",
+            color = if (isListening) DeepBlack else VillainOrange,
+            style = MaterialTheme.typography.labelSmall,
         )
     }
 }

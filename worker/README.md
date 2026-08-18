@@ -13,6 +13,12 @@ The deployed URL will look like:
 
 `https://doomsy-chat.<your-subdomain>.workers.dev`
 
+Useful routes:
+
+- `GET /health` — `{ ok, service, model }` for the Android launch probe
+- `POST /chat` — `{ message, history }` → `{ reply, model, source }`
+- `/chat` is rate-limited per client IP (30 requests / minute)
+
 ## Wire Android
 
 Build the app with the Worker URL:

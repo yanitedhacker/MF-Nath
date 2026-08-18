@@ -20,5 +20,13 @@ object DoomsyQuips {
         "She who must not be named... still got that car money though.",
     )
 
+    val deepQuips = listOf(
+        "Long press. The villain files that as intent, not accident.",
+        "Mr Bitches taught the mask to wait. Doomsy can wait with you.",
+        "The ledger don't close. Distance don't erase it either.",
+    )
+
     fun random(): String = allQuips.random()
+
+    fun randomDeep(): String = deepQuips.random()
 }

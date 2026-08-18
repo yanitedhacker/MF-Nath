@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.mrbitches.doomsy.data.DoomsySessionStore
 import com.mrbitches.doomsy.ui.intro.IntroScreen
 import com.mrbitches.doomsy.ui.main.MainScreen
 import com.mrbitches.doomsy.ui.theme.DoomsyTheme
@@ -20,10 +21,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        val sessionStore = DoomsySessionStore(this)
 
         setContent {
             DoomsyTheme {
-                var introComplete by remember { mutableStateOf(false) }
+                var introComplete by remember { mutableStateOf(sessionStore.isIntroSeen()) }
 
                 Crossfade(
                     targetState = introComplete,
@@ -31,7 +33,12 @@ class MainActivity : ComponentActivity() {
                     label = "introCrossfade",
                 ) { isReady ->
                     if (!isReady) {
-                        IntroScreen(onIntroComplete = { introComplete = true })
+                        IntroScreen(
+                            onIntroComplete = {
+                                sessionStore.setIntroSeen()
+                                introComplete = true
+                            },
+                        )
                     } else {
                         MainScreen()
                     }
